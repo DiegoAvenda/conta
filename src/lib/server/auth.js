@@ -3,11 +3,9 @@ import { betterAuth } from 'better-auth/minimal';
 import { sveltekitCookies } from 'better-auth/svelte-kit';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import { getRequestEvent } from '$app/server';
-import { MongoClient } from 'mongodb';
-import { MONGODB_URI } from '$env/static/private';
+import { getDb } from '$lib/server/db.js';
 
-const client = new MongoClient(MONGODB_URI);
-const db = client.db();
+const db = await getDb();
 
 export const auth = betterAuth({
 	baseURL: env.ORIGIN,

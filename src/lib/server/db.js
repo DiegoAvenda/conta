@@ -1,10 +1,17 @@
 import { MongoClient } from 'mongodb';
 import { MONGODB_URI } from '$env/static/private';
 
-const uri = MONGODB_URI;
+function crearConexion() {
+	const cliente = new MongoClient(MONGODB_URI);
+	return cliente.connect();
+}
 
-let client;
+// Evita abrir una conexión nueva en cada recarga durante desarrollo
+if (!globalThis._mongoClientPromise) {
+	globalThis._mongoClientPromise = crearConexion();
+}
 
-client = new MongoClient(uri);
-
-export default client;
+export async function getDb() {
+	const cliente = await globalThis._mongoClientPromise;
+	return cliente.db();
+}
