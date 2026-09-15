@@ -55,6 +55,6 @@
 		</ul>
 	</div>
 	<div class="navbar-end">
-		<a href={resolve('/pedir-factura-gasto')} class="btn">Pedir factura gasto</a>
+		<a href={resolve('/demo')} class="btn">Login</a>
 	</div>
 </div>
