@@ -1,6 +1,5 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { resolve } from '$app/paths';
 
 	let { data } = $props();
 
@@ -21,7 +20,7 @@
 
 	function cambiarPeriodo(event) {
 		const [anio, mes] = event.target.value.split('-');
-		goto(resolve(`/dashboard?anio=${anio}&mes=${mes}`));
+		goto(`?anio=${anio}&mes=${mes}`);
 	}
 
 	// profit-bar necesita un divisor > 0 para no romperse en un mes sin ventas
@@ -204,10 +203,7 @@
 
 						<div class="check-content">
 							<strong>Ventas</strong>
-							<span
-								>{data.resumen.ventas.registros} registros ({data.resumen.ventas.facturadas} facturadas,
-								{data.resumen.ventas.manuales} manuales)</span
-							>
+							<span>{data.resumen.ventas.registros} registros</span>
 						</div>
 
 						<span class="complete-label">Listo</span>

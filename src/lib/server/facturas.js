@@ -6,20 +6,17 @@ export async function crearFacturaDesdeXml(userId, rfcNegocio, xmlTexto) {
 	const db = await getDb();
 	const datos = parsearCfdi(xmlTexto);
 
-	// el RFC del negocio contra Emisor/Receptor te dice si es ingreso o gasto,
-	// sin que el usuario tenga que elegirlo a mano
-	let tipo;
-	if (datos.rfcReceptor === rfcNegocio) {
-		tipo = 'gasto'; // tú lo recibiste, es algo que compraste
-	} else if (datos.rfcEmisor === rfcNegocio) {
-		tipo = 'ingreso'; // tú lo emitiste, es algo que vendiste
-	} else {
-		throw new Error('Este CFDI no corresponde al RFC de tu negocio');
+	// esta ruta solo recibe CFDI de gastos (insumos, proveedores) — las ventas
+	// entran por /ventas, nunca subiendo un CFDI propio. Por eso no se infiere
+	// tipo: siempre es gasto. Lo que sí se valida es que el Receptor seas tú,
+	// como candado contra subir por error el CFDI de otro negocio
+	if (datos.rfcReceptor !== rfcNegocio) {
+		throw new Error('Este CFDI no fue emitido a tu RFC');
 	}
 
 	const factura = {
 		userId,
-		tipo,
+		tipo: 'gasto',
 		uuid: datos.uuid,
 		fecha: new Date(datos.fecha),
 		subtotal: datos.subtotal,
@@ -63,46 +60,6 @@ export async function eliminarFactura(userId, facturaId) {
 		_id: new ObjectId(facturaId),
 		userId
 	});
-}
-
-export async function resumenFiscal(userId, anio) {
-	const db = await getDb();
-
-	const inicio = new Date(`${anio}-01-01`);
-	const fin = new Date(`${anio + 1}-01-01`);
-
-	const resultado = await db
-		.collection('facturas')
-		.aggregate([
-			{ $match: { userId, fecha: { $gte: inicio, $lt: fin } } },
-			{
-				$group: {
-					_id: '$tipo',
-					total: { $sum: '$total' },
-					iva: { $sum: '$iva' },
-					cantidad: { $sum: 1 }
-				}
-			}
-		])
-		.toArray();
-
-	const ingresos = resultado.find((r) => r._id === 'ingreso') || { total: 0, iva: 0, cantidad: 0 };
-	const gastos = resultado.find((r) => r._id === 'gasto') || { total: 0, iva: 0, cantidad: 0 };
-
-	const utilidad = ingresos.total - gastos.total;
-	const ivaTrasladado = ingresos.iva;
-	const ivaAcreditable = gastos.iva;
-	const ivaAPagar = Math.max(ivaTrasladado - ivaAcreditable, 0);
-
-	return {
-		ingresos: ingresos.total,
-		gastos: gastos.total,
-		utilidad,
-		ivaTrasladado,
-		ivaAcreditable,
-		ivaAPagar,
-		numFacturas: ingresos.cantidad + gastos.cantidad
-	};
 }
 
 // Ejecutar una sola vez (script de setup, no en cada request) para que Mongo

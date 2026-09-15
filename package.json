@@ -42,6 +42,8 @@
 	},
 	"dependencies": {
 		"fast-xml-parser": "^5.11.1",
-		"mongodb": "^7.6.0"
+		"groq-sdk": "^1.6.0",
+		"mongodb": "^7.6.0",
+		"pdf-parse": "^2.4.5"
 	}
 }

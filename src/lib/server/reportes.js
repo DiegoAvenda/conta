@@ -10,14 +10,16 @@ export async function resumenCombinado(userId, anio, mes) {
 	const inicio = new Date(anio, mes - 1, 1);
 	const fin = new Date(anio, mes, 1);
 
-	const [facturasPorTipo, ventasAgg, canalesAgg] = await Promise.all([
+	const [facturasAgg, ventasAgg, canalesAgg] = await Promise.all([
+		// todo lo que vive en "facturas" es gasto (ver facturas.js) — no hace
+		// falta agrupar por tipo, solo sumar
 		db
 			.collection('facturas')
 			.aggregate([
 				{ $match: { userId, fecha: { $gte: inicio, $lt: fin } } },
 				{
 					$group: {
-						_id: '$tipo',
+						_id: null,
 						total: { $sum: '$total' },
 						iva: { $sum: '$iva' },
 						cantidad: { $sum: 1 }
@@ -53,40 +55,27 @@ export async function resumenCombinado(userId, anio, mes) {
 			.toArray()
 	]);
 
-	const facturasIngreso = facturasPorTipo.find((f) => f._id === 'ingreso') || {
-		total: 0,
-		iva: 0,
-		cantidad: 0
-	};
-	const facturasGasto = facturasPorTipo.find((f) => f._id === 'gasto') || {
-		total: 0,
-		iva: 0,
-		cantidad: 0
-	};
+	const facturas = facturasAgg[0] || { total: 0, iva: 0, cantidad: 0 };
 	const ventas = ventasAgg[0] || { total: 0, iva: 0, cantidad: 0 };
 
-	const ventasTotales = facturasIngreso.total + ventas.total;
-	const ivaTrasladado = facturasIngreso.iva + ventas.iva;
-	const ivaAcreditable = facturasGasto.iva;
-	const gastos = facturasGasto.total;
+	const ivaTrasladado = ventas.iva; // el único IVA que cobras viene de tus ventas
+	const ivaAcreditable = facturas.iva; // el único IVA que te acreditan viene de tus gastos
 
 	return {
 		ventas: {
-			total: ventasTotales,
-			registros: facturasIngreso.cantidad + ventas.cantidad,
-			manuales: ventas.cantidad,
-			facturadas: facturasIngreso.cantidad
+			total: ventas.total,
+			registros: ventas.cantidad
 		},
 		gastos: {
-			total: gastos,
-			registros: facturasGasto.cantidad
+			total: facturas.total,
+			registros: facturas.cantidad
 		},
 		iva: {
 			trasladado: ivaTrasladado,
 			acreditable: ivaAcreditable,
 			estimado: Math.max(ivaTrasladado - ivaAcreditable, 0)
 		},
-		utilidad: ventasTotales - gastos,
+		utilidad: ventas.total - facturas.total,
 		canales: canalesAgg.map((c) => ({ canal: c._id, total: c.total }))
 	};
 }
@@ -106,9 +95,9 @@ export async function ultimosMovimientos(userId, anio, mes, limite = 8) {
 	const movimientos = [
 		...facturas.map((f) => ({
 			fecha: f.fecha,
-			descripcion: f.tipo === 'gasto' ? f.nombreEmisor : `Venta facturada — ${f.nombreEmisor}`,
-			tipo: f.tipo === 'gasto' ? 'Gasto' : 'Venta',
-			monto: f.tipo === 'gasto' ? -f.total : f.total
+			descripcion: f.nombreEmisor,
+			tipo: 'Gasto',
+			monto: -f.total
 		})),
 		...ventas.map((v) => ({
 			fecha: v.fecha,

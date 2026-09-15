@@ -37,7 +37,7 @@
 				<li><a href={resolve('/dashboard')}>Dashboard</a></li>
 			</ul>
 		</div>
-		<a href={resolve('/')} class="btn btn-ghost text-xl">daisyUI</a>
+		<a href={resolve('/')} class="btn btn-ghost text-xl">Fondi</a>
 	</div>
 	<div class="navbar-center hidden lg:flex">
 		<ul class="menu menu-horizontal px-1">

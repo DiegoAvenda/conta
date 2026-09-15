@@ -1,3 +1,7 @@
+<script>
+	import { resolve } from '$app/paths';
+</script>
+
 <div class="hero min-h-screen bg-base-200">
 	<div class="hero-content text-center">
 		<div class="max-w-md">
@@ -6,7 +10,7 @@
 				Te llevamos de la mano para que tengas tu contabilidad en orden y pagos tus impuestos en
 				tiempo y forma.
 			</p>
-			<button class="btn btn-primary">Get Started</button>
+			<button class="btn btn-primary"><a href={resolve('/questions')}>Get started</a></button>
 		</div>
 	</div>
 </div>
