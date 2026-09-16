@@ -78,6 +78,22 @@
 					<span class="text-green-600">${form.data.ganancia_neta ?? 0}</span>
 				</div>
 			</div>
+
+			{#if form.guardado}
+				<p class="mt-4 text-xs font-medium text-green-700">
+					✓ Guardado en tu historial de reportes
+				</p>
+			{:else}
+				<p class="mt-4 text-xs font-medium text-amber-700">
+					⚠ Se extrajo la información pero no se pudo guardar. Intenta de nuevo.
+				</p>
+			{/if}
+
+			<p class="mt-2 text-xs text-gray-500">
+				Nota: si ya registraste ventas de {form.data.plataforma} manualmente para este periodo en "Mis
+				ventas", revisa que no se dupliquen al ver tu resumen fiscal — por ahora ambas fuentes se muestran
+				por separado.
+			</p>
 		</div>
 	{/if}
 </main>

@@ -9,74 +9,152 @@ export async function resumenCombinado(userId, anio, mes) {
 
 	const inicio = new Date(anio, mes - 1, 1);
 	const fin = new Date(anio, mes, 1);
-
-	const [facturasAgg, ventasAgg, canalesAgg] = await Promise.all([
-		// todo lo que vive en "facturas" es gasto (ver facturas.js) — no hace
-		// falta agrupar por tipo, solo sumar
-		db
-			.collection('facturas')
-			.aggregate([
-				{ $match: { userId, fecha: { $gte: inicio, $lt: fin } } },
-				{
-					$group: {
-						_id: null,
-						total: { $sum: '$total' },
-						iva: { $sum: '$iva' },
-						cantidad: { $sum: 1 }
-					}
+	const numeroMongo = (campo) => ({
+		$convert: { input: campo, to: 'double', onError: 0, onNull: 0 }
+	});
+	const filtroReporte = {
+		userId,
+		$or: [
+			{
+				$expr: {
+					$and: [
+						{ $eq: [numeroMongo('$periodoAnio'), anio] },
+						{ $eq: [numeroMongo('$periodoMes'), mes] }
+					]
 				}
-			])
-			.toArray(),
-
-		db
-			.collection('ventas')
-			.aggregate([
-				{ $match: { userId, fecha: { $gte: inicio, $lt: fin } } },
-				{
-					$group: {
-						_id: null,
-						total: { $sum: '$monto' },
-						iva: { $sum: '$iva' },
-						cantidad: { $sum: 1 }
-					}
+			},
+			{
+				$expr: {
+					$and: [
+						{ $eq: [numeroMongo('$periodo_anio'), anio] },
+						{ $eq: [numeroMongo('$periodo_mes'), mes] }
+					]
 				}
-			])
-			.toArray(),
+			}
+		]
+	};
 
-		// solo ventas manuales tienen canal — un CFDI de ingreso no lo trae,
-		// así que esta distribución no representa el 100% de las ventas todavía
-		db
-			.collection('ventas')
-			.aggregate([
-				{ $match: { userId, fecha: { $gte: inicio, $lt: fin } } },
-				{ $group: { _id: '$canal', total: { $sum: '$monto' } } },
-				{ $sort: { total: -1 } }
-			])
-			.toArray()
-	]);
+	const [facturasAgg, ventasAgg, canalesVentasAgg, reportesAgg, canalesReporteAgg] =
+		await Promise.all([
+			// todo lo que vive en "facturas" es gasto (ver facturas.js) — no hace
+			// falta agrupar por tipo, solo sumar
+			db
+				.collection('facturas')
+				.aggregate([
+					{ $match: { userId, fecha: { $gte: inicio, $lt: fin } } },
+					{
+						$group: {
+							_id: null,
+							total: { $sum: '$total' },
+							iva: { $sum: '$iva' },
+							cantidad: { $sum: 1 }
+						}
+					}
+				])
+				.toArray(),
+
+			db
+				.collection('ventas')
+				.aggregate([
+					{ $match: { userId, fecha: { $gte: inicio, $lt: fin } } },
+					{
+						$group: {
+							_id: null,
+							total: { $sum: '$monto' },
+							iva: { $sum: '$iva' },
+							cantidad: { $sum: 1 }
+						}
+					}
+				])
+				.toArray(),
+
+			db
+				.collection('ventas')
+				.aggregate([
+					{ $match: { userId, fecha: { $gte: inicio, $lt: fin } } },
+					{ $group: { _id: '$canal', total: { $sum: '$monto' } } },
+					{ $sort: { total: -1 } }
+				])
+				.toArray(),
+
+			// los reportes de plataforma se filtran por periodoAnio/periodoMes (que
+			// la IA extrajo), no por "fecha" — el reporte no tiene un día específico,
+			// cubre el mes completo
+			db
+				.collection('reportesPlataforma')
+				.aggregate([
+					{ $match: filtroReporte },
+					{
+						$group: {
+							_id: null,
+							ventasBrutas: { $sum: numeroMongo('$ventasBrutas') },
+							comisiones: { $sum: numeroMongo('$comisiones') },
+							ivaRetenido: { $sum: numeroMongo('$ivaRetenido') },
+							isrRetenido: { $sum: numeroMongo('$isrRetenido') },
+							cantidad: { $sum: 1 }
+						}
+					}
+				])
+				.toArray(),
+
+			// mismo periodo, ahora agrupado por plataforma para el desglose de canales
+			db
+				.collection('reportesPlataforma')
+				.aggregate([
+					{ $match: filtroReporte },
+					{
+						$group: { _id: '$plataforma', total: { $sum: numeroMongo('$ventasBrutas') } }
+					},
+					{ $sort: { total: -1 } }
+				])
+				.toArray()
+		]);
 
 	const facturas = facturasAgg[0] || { total: 0, iva: 0, cantidad: 0 };
 	const ventas = ventasAgg[0] || { total: 0, iva: 0, cantidad: 0 };
+	const reportes = reportesAgg[0] || {
+		ventasBrutas: 0,
+		comisiones: 0,
+		ivaRetenido: 0,
+		isrRetenido: 0,
+		cantidad: 0
+	};
 
-	const ivaTrasladado = ventas.iva; // el único IVA que cobras viene de tus ventas
-	const ivaAcreditable = facturas.iva; // el único IVA que te acreditan viene de tus gastos
+	const ventasTotales = ventas.total + reportes.ventasBrutas;
+	const ivaTrasladado = ventas.iva; // IVA identificado solo de ventas directas —
+	// el reporte de plataforma trae lo YA retenido, no el IVA trasladado total de esa venta
+	const ivaAcreditable = facturas.iva;
+
+	// comisiones de la plataforma NO se restan aquí de utilidad/gastos: si Uber/DiDi
+	// también te emite un CFDI por su comisión y lo subes en /facturas, restarlo
+	// aquí otra vez lo contaría doble. Se muestra aparte hasta que se decida
+	// una sola fuente de verdad para ese gasto.
+	const canales = [
+		...canalesVentasAgg.map((c) => ({ canal: c._id, total: c.total })),
+		...canalesReporteAgg.map((c) => ({ canal: c._id ?? 'Plataforma sin nombre', total: c.total }))
+	].sort((a, b) => b.total - a.total);
 
 	return {
 		ventas: {
-			total: ventas.total,
-			registros: ventas.cantidad
+			total: ventasTotales,
+			registros: ventas.cantidad,
+			deReportes: reportes.ventasBrutas,
+			reportesCantidad: reportes.cantidad
 		},
 		gastos: {
 			total: facturas.total,
 			registros: facturas.cantidad
 		},
+		comisionesPlataforma: reportes.comisiones,
 		iva: {
 			trasladado: ivaTrasladado,
 			acreditable: ivaAcreditable,
-			estimado: Math.max(ivaTrasladado - ivaAcreditable, 0)
+			retenidoPlataformas: reportes.ivaRetenido,
+			estimado: Math.max(ivaTrasladado - ivaAcreditable - reportes.ivaRetenido, 0)
 		},
-		utilidad: ventas.total - facturas.total,
-		canales: canalesAgg.map((c) => ({ canal: c._id, total: c.total }))
+		isrRetenidoPlataformas: reportes.isrRetenido,
+		utilidad: ventasTotales - facturas.total,
+		canales
 	};
 }
 

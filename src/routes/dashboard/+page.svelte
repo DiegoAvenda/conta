@@ -1,5 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	let { data } = $props();
 
@@ -20,7 +21,7 @@
 
 	function cambiarPeriodo(event) {
 		const [anio, mes] = event.target.value.split('-');
-		goto(`?anio=${anio}&mes=${mes}`);
+		goto(resolve(`/dashboard?anio=${anio}&mes=${mes}`));
 	}
 
 	// profit-bar necesita un divisor > 0 para no romperse en un mes sin ventas
@@ -100,23 +101,28 @@
 
 				<div class="tax-breakdown">
 					<div class="tax-row">
-						<span>IVA trasladado (cobrado)</span>
+						<span>IVA trasladado (ventas directas)</span>
 						<strong>{formatMoney(data.resumen.iva.trasladado)}</strong>
 					</div>
 
 					<div class="tax-row deduction">
-						<span>IVA acreditable (pagado)</span>
+						<span>IVA acreditable (gastos)</span>
 						<strong>-{formatMoney(data.resumen.iva.acreditable)}</strong>
+					</div>
+
+					<div class="tax-row deduction">
+						<span>IVA ya retenido por plataformas</span>
+						<strong>-{formatMoney(data.resumen.iva.retenidoPlataformas)}</strong>
 					</div>
 				</div>
 
 				<div class="result-warning">
 					<span>ⓘ</span>
 					<div>
-						<strong>El ISR y las retenciones todavía no están incluidos.</strong>
+						<strong>El ISR todavía no se calcula, solo se muestra lo retenido.</strong>
 						<p>
-							Esto solo cubre IVA. El cálculo de ISR y la lectura de retenciones de plataformas
-							(Uber Eats, Rappi) están pendientes de construir.
+							Las plataformas ya te retuvieron {formatMoney(data.resumen.isrRetenidoPlataformas)} de ISR
+							este mes, pero el ISR total que debes (con base en tu régimen) no está calculado todavía.
 						</p>
 					</div>
 				</div>
@@ -321,7 +327,6 @@
 			sans-serif;
 	}
 
-	button,
 	select {
 		font: inherit;
 	}
