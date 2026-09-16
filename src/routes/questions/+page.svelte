@@ -209,11 +209,11 @@
 				<p>{resultado.texto}</p>
 
 				{#if resultado.rareza === 'comun'}
-					<span class="badge badge-comun">ITEM COMÚN — Gratis con anuncios</span>
+					<span class="badge-comun badge">ITEM COMÚN — Gratis con anuncios</span>
 				{:else if resultado.rareza === 'epico'}
-					<span class="badge badge-epico">ITEM ÉPICO — Requiere suscripción</span>
+					<span class="badge-epico badge">ITEM ÉPICO — Requiere suscripción</span>
 				{:else}
-					<span class="badge badge-especial">MISIÓN ESPECIAL — Habla con un contador</span>
+					<span class="badge-especial badge">MISIÓN ESPECIAL — Habla con un contador</span>
 				{/if}
 
 				{#if guardado}

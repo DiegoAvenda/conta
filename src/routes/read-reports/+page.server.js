@@ -67,6 +67,9 @@ export const actions = {
 			await guardarReportePlataforma(userId, datosContables, file.name);
 		} catch (err) {
 			console.error(err);
+			if (err.code === 'REPORT_DATA_INVALID') {
+				return fail(422, { error: err.message, data: datosContables });
+			}
 			guardado = false;
 		}
 

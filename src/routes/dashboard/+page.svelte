@@ -153,7 +153,7 @@
 					</div>
 
 					<div>
-						<span>Gastos</span>
+						<span>Gastos + comisiones</span>
 						<strong>-{formatMoney(data.resumen.gastos.total)}</strong>
 					</div>
 				</div>
@@ -175,7 +175,7 @@
 				<div class="metric-icon expenses">↘</div>
 
 				<div>
-					<span>Gastos</span>
+					<span>Gastos + comisiones</span>
 					<strong>{formatMoney(data.resumen.gastos.total)}</strong>
 					<small>{data.resumen.gastos.registros} facturas</small>
 				</div>
@@ -218,7 +218,7 @@
 					<div class="check-item">
 						<div class="check-content">
 							<strong>Facturas de gastos</strong>
-							<span>{data.resumen.gastos.registros} CFDI procesados</span>
+							<span>{data.resumen.gastos.registros} CFDI; comisiones incluidas en gastos</span>
 						</div>
 
 						<span class="complete-label">Listo</span>
@@ -230,7 +230,7 @@
 				<div class="panel-header">
 					<div>
 						<h2>¿De dónde viene tu dinero?</h2>
-						<p>Solo ventas registradas manualmente — los CFDI de venta no traen canal.</p>
+						<p>Ventas manuales y reportes de plataformas.</p>
 					</div>
 				</div>
 
@@ -255,9 +255,7 @@
 							</small>
 						</div>
 					{:else}
-						<p style="color: #858991; font-size: 12px;">
-							Sin ventas manuales registradas este mes.
-						</p>
+						<p style="color: #858991; font-size: 12px;">Sin ventas registradas este mes.</p>
 					{/each}
 				</div>
 			</div>

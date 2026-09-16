@@ -12,7 +12,7 @@
 
 	// el RFC viene de businessProfile (Mongo); se resetea cuando data.rfc cambia
 	// (por ejemplo, justo después de guardar y que SvelteKit vuelva a correr el load)
-	let rfcInput = $state(data.rfc);
+	let rfcInput = $derived(data.rfc);
 	$effect(() => {
 		rfcInput = data.rfc;
 	});
@@ -90,20 +90,20 @@
 <div class="mx-auto max-w-4xl space-y-6 p-4 font-sans">
 	<!-- Header del Módulo -->
 	<header
-		class="bg-base-200 border-base-300 flex flex-col items-start justify-between gap-4 rounded-2xl border p-6 sm:flex-row sm:items-center"
+		class="flex flex-col items-start justify-between gap-4 rounded-2xl border border-base-300 bg-base-200 p-6 sm:flex-row sm:items-center"
 	>
 		<div>
-			<span class="badge badge-primary mb-2 font-mono text-xs">Paso Previo a Carga de Gastos</span>
+			<span class="mb-2 badge font-mono text-xs badge-primary">Paso Previo a Carga de Gastos</span>
 			<h1 class="text-2xl font-black">Guía para Solicitar Facturas</h1>
-			<p class="text-base-content/70 mt-1 text-xs">
+			<p class="mt-1 text-xs text-base-content/70">
 				Asegura que cada insumo de tu cocina sea 100% deducible ante el SAT.
 			</p>
 		</div>
 
 		<!-- Selector de Vista -->
-		<div class="join bg-base-100 border-base-300 rounded-xl border p-1">
+		<div class="join rounded-xl border border-base-300 bg-base-100 p-1">
 			<button
-				class="join-item btn btn-sm font-mono {pestañaActiva === 'tarjeta'
+				class="btn join-item font-mono btn-sm {pestañaActiva === 'tarjeta'
 					? 'btn-primary'
 					: 'btn-ghost'}"
 				onclick={() => (pestañaActiva = 'tarjeta')}
@@ -111,7 +111,7 @@
 				🎴 Ficha Fiscal
 			</button>
 			<button
-				class="join-item btn btn-sm font-mono {pestañaActiva === 'reglas'
+				class="btn join-item font-mono btn-sm {pestañaActiva === 'reglas'
 					? 'btn-primary'
 					: 'btn-ghost'}"
 				onclick={() => (pestañaActiva = 'reglas')}
@@ -129,7 +129,7 @@
 				class="relative space-y-6 overflow-hidden rounded-3xl border border-slate-700 bg-linear-to-br from-slate-900 via-slate-800 to-zinc-900 p-6 text-white shadow-xl md:col-span-7"
 			>
 				<div
-					class="bg-primary/20 absolute -right-10 -bottom-10 h-40 w-40 rounded-full blur-2xl"
+					class="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-primary/20 blur-2xl"
 				></div>
 
 				<div class="flex items-start justify-between">
@@ -141,7 +141,7 @@
 							{datosFiscales.razonSocial}
 						</h2>
 					</div>
-					<span class="badge badge-success font-mono text-[10px] font-bold">RÉGIMEN 612</span>
+					<span class="badge font-mono text-[10px] font-bold badge-success">RÉGIMEN 612</span>
 				</div>
 
 				<div class="space-y-3 font-mono text-xs">
@@ -167,15 +167,15 @@
 									name="rfc"
 									bind:value={rfcInput}
 									maxlength="13"
-									class="input input-sm input-bordered bg-slate-900 font-bold text-emerald-400 uppercase"
+									class="input-bordered input bg-slate-900 font-bold text-emerald-400 uppercase input-sm"
 									required
 								/>
-								<button type="submit" class="btn btn-xs btn-success" disabled={guardando}>
+								<button type="submit" class="btn btn-success btn-xs" disabled={guardando}>
 									{guardando ? '...' : 'Guardar'}
 								</button>
 								<button
 									type="button"
-									class="btn btn-xs btn-ghost"
+									class="btn btn-ghost btn-xs"
 									onclick={() => {
 										editandoRfc = false;
 										rfcInput = data.rfc;
@@ -193,7 +193,7 @@
 								<span class="text-base font-bold text-emerald-400">
 									{data.rfc || 'Sin RFC registrado'}
 								</span>
-								<button class="btn btn-xs btn-ghost" onclick={() => (editandoRfc = true)}>
+								<button class="btn btn-ghost btn-xs" onclick={() => (editandoRfc = true)}>
 									✎ Editar
 								</button>
 							</div>
@@ -220,7 +220,7 @@
 				<button
 					onclick={copiarDatosWhatsApp}
 					disabled={!data.rfc}
-					class="btn btn-emerald-500 w-full gap-2 border-none bg-emerald-600 text-xs font-bold text-white shadow-lg hover:bg-emerald-500 disabled:opacity-50"
+					class="btn-emerald-500 btn w-full gap-2 border-none bg-emerald-600 text-xs font-bold text-white shadow-lg hover:bg-emerald-500 disabled:opacity-50"
 				>
 					{#if copiado}
 						<span>¡Copiado al Portapapeles! 📑</span>
@@ -233,13 +233,13 @@
 			</div>
 
 			<!-- Instrucciones de Uso Rápido -->
-			<div class="bg-base-100 border-base-200 space-y-4 rounded-2xl border p-5 md:col-span-5">
+			<div class="space-y-4 rounded-2xl border border-base-200 bg-base-100 p-5 md:col-span-5">
 				<h3 class="flex items-center gap-2 text-base font-black">
 					<span>💡</span> ¿Cómo usar esta ficha?
 				</h3>
 
 				<ol
-					class="text-base-content/80 list-inside list-decimal space-y-3 text-xs leading-relaxed font-medium"
+					class="list-inside list-decimal space-y-3 text-xs leading-relaxed font-medium text-base-content/80"
 				>
 					<li class="pl-1">
 						<strong class="text-base-content">En el mostrador:</strong> Muestra esta pantalla al cajero
@@ -255,7 +255,7 @@
 					</li>
 				</ol>
 
-				<div class="alert alert-info border-info/30 rounded-xl border p-3 text-[11px]">
+				<div class="alert rounded-xl border border-info/30 p-3 text-[11px] alert-info">
 					<span
 						>ℹ️ Muestra siempre el Uso <strong>G01</strong> para tus compras de materia prima.</span
 					>
@@ -267,7 +267,7 @@
 		<section class="grid grid-cols-1 gap-4 md:grid-cols-2">
 			{#each reglasFacturacion as regla (regla.id)}
 				<div
-					class="bg-base-100 border-base-200 flex flex-col justify-between space-y-3 rounded-2xl border p-5 shadow-sm"
+					class="flex flex-col justify-between space-y-3 rounded-2xl border border-base-200 bg-base-100 p-5 shadow-sm"
 				>
 					<div class="space-y-2">
 						<div class="flex items-center justify-between">
@@ -276,19 +276,19 @@
 						</div>
 
 						<h3 class="text-base font-black">{regla.titulo}</h3>
-						<p class="text-primary text-xs font-semibold">{regla.resumen}</p>
-						<p class="text-base-content/70 text-xs leading-relaxed">{regla.detalle}</p>
+						<p class="text-xs font-semibold text-primary">{regla.resumen}</p>
+						<p class="text-xs leading-relaxed text-base-content/70">{regla.detalle}</p>
 					</div>
 
 					{#if regla.tipo === 'error_comun'}
 						<div
-							class="bg-error/10 border-error text-error rounded-r-lg border-l-2 p-2 text-[11px] font-semibold"
+							class="rounded-r-lg border-l-2 border-error bg-error/10 p-2 text-[11px] font-semibold text-error"
 						>
 							❌ Nunca solicites facturas con Régimen 625 (Plataformas).
 						</div>
 					{:else if regla.tipo === 'alerta'}
 						<div
-							class="bg-warning/10 border-warning text-warning-content rounded-r-lg border-l-2 p-2 text-[11px] font-semibold"
+							class="rounded-r-lg border-l-2 border-warning bg-warning/10 p-2 text-[11px] font-semibold text-warning-content"
 						>
 							⚠️ Evita efectivo en compras > $2,000 MXN.
 						</div>
@@ -299,12 +299,12 @@
 	{/if}
 
 	<!-- Footer / Siguiente Paso -->
-	<footer class="border-base-200 flex items-center justify-between border-t pt-4">
-		<a href={resolve('/onboarding/guia-sat')} class="btn btn-ghost btn-sm font-mono">
+	<footer class="flex items-center justify-between border-t border-base-200 pt-4">
+		<a href={resolve('/onboarding/guia-sat')} class="btn btn-ghost font-mono btn-sm">
 			&larr; Volver a Guía SAT
 		</a>
 
-		<a href={resolve('/gastos/cargar')} class="btn btn-primary btn-sm gap-2 font-bold">
+		<a href={resolve('/gastos/cargar')} class="btn gap-2 font-bold btn-primary btn-sm">
 			<span>Entendido, ir a Registro de Gastos</span>
 			<span>&rarr;</span>
 		</a>

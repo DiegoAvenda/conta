@@ -121,6 +121,7 @@ export async function resumenCombinado(userId, anio, mes) {
 	};
 
 	const ventasTotales = ventas.total + reportes.ventasBrutas;
+	const gastosTotales = facturas.total + reportes.comisiones;
 	const ivaTrasladado = ventas.iva; // IVA identificado solo de ventas directas —
 	// el reporte de plataforma trae lo YA retenido, no el IVA trasladado total de esa venta
 	const ivaAcreditable = facturas.iva;
@@ -137,13 +138,15 @@ export async function resumenCombinado(userId, anio, mes) {
 	return {
 		ventas: {
 			total: ventasTotales,
-			registros: ventas.cantidad,
+			registros: ventas.cantidad + reportes.cantidad,
+			manuales: ventas.cantidad,
 			deReportes: reportes.ventasBrutas,
 			reportesCantidad: reportes.cantidad
 		},
 		gastos: {
-			total: facturas.total,
-			registros: facturas.cantidad
+			total: gastosTotales,
+			registros: facturas.cantidad,
+			comisionesPlataforma: reportes.comisiones
 		},
 		comisionesPlataforma: reportes.comisiones,
 		iva: {
@@ -153,7 +156,7 @@ export async function resumenCombinado(userId, anio, mes) {
 			estimado: Math.max(ivaTrasladado - ivaAcreditable - reportes.ivaRetenido, 0)
 		},
 		isrRetenidoPlataformas: reportes.isrRetenido,
-		utilidad: ventasTotales - facturas.total,
+		utilidad: ventasTotales - gastosTotales,
 		canales
 	};
 }
