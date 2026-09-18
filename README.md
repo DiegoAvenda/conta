@@ -15,7 +15,7 @@ To recreate this project with the same configuration:
 
 ```sh
 # recreate this project
-pnpm dlx sv@0.17.0 create --template minimal --no-types --add prettier eslint tailwindcss="plugins:none" sveltekit-adapter="adapter:vercel" better-auth="demo:password,github" drizzle="database:sqlite+sqlite:libsql" --install pnpm conta
+pnpm dlx sv@0.17.0 create --template minimal --no-types --add prettier eslint tailwindcss="plugins:none" sveltekit-adapter="adapter:vercel" better-auth="demo:password,github" --install pnpm conta
 ```
 
 ## Developing
