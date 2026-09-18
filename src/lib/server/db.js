@@ -1,9 +1,9 @@
 import { MongoClient } from 'mongodb';
-import { MONGODB_URI } from '$env/static/private';
+import { MONGODB_URI, MONGODB_DATABASE } from '$env/static/private';
 
 function crearConexion() {
-	const cliente = new MongoClient(MONGODB_URI);
-	return cliente.connect();
+	const client = new MongoClient(MONGODB_URI);
+	return client.connect();
 }
 
 // Evita abrir una conexión nueva en cada recarga durante desarrollo
@@ -12,6 +12,6 @@ if (!globalThis._mongoClientPromise) {
 }
 
 export async function getDb() {
-	const cliente = await globalThis._mongoClientPromise;
-	return cliente.db();
+	const client = await globalThis._mongoClientPromise;
+	return client.db(MONGODB_DATABASE);
 }

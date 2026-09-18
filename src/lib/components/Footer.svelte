@@ -20,7 +20,7 @@
 	<nav>
 		<h6 class="footer-title">Resultados</h6>
 		<a href={resolve('/dashboard')} class="link link-hover">Dashboard</a>
-		<a href={resolve('/')} class="link link-hover">Privacy policy</a>
+		<a href={resolve('/orders')} class="link link-hover">Orders</a>
 		<a href={resolve('/')} class="link link-hover">Cookie policy</a>
 	</nav>
 </footer>
