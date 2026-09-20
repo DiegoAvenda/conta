@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 	import { resolve } from '$app/paths';
 </script>
 
@@ -55,6 +55,6 @@
 		</ul>
 	</div>
 	<div class="navbar-end">
-		<a href={resolve('/demo')} class="btn">Login</a>
+		<a href={resolve('/better-auth')} class="btn">Login</a>
 	</div>
 </div>
