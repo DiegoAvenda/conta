@@ -1,6 +1,8 @@
 <script>
 	import { products } from '$lib/utils/products';
-	import { addToCart } from '$lib/utils/cart.svelte.js';
+	import { cart, addToCart, substractFromCart } from '$lib/utils/cart.svelte.js';
+
+	let totalPrice = $derived(cart.reduce((sum, item) => sum + item.price * item.quantity, 0));
 </script>
 
 <div class="m-8">
@@ -28,5 +30,44 @@
 				</div>
 			</div>
 		{/each}
+	</div>
+</div>
+
+<div tabindex="-1" class="dropdown-content card z-1 mt-3 w-52 bg-base-100 shadow card-sm">
+	<div class="card-body">
+		<span class="text-lg font-bold">{cart?.length | 0} Items</span>
+		{#if cart}
+			{#each cart as item (item.name)}
+				<div class="card-compact card bg-base-100 shadow-xl">
+					<figure>
+						<img width="75" src={item.image} alt={item.name} />
+					</figure>
+					<div class="card-body">
+						<h2 class="card-title">{item.name}</h2>
+						<div class="card-actions justify-end">
+							<p>{item.quantity}</p>
+							<button
+								aria-label="remove"
+								onclick={() => substractFromCart(item.id)}
+								class="btn btn-xs">-</button
+							>
+							<button aria-label="remove" onclick={() => addToCart(item.id)} class="btn btn-xs"
+								>+</button
+							>
+						</div>
+					</div>
+				</div>
+			{/each}
+		{/if}
+		<span class="text-info">Subtotal: ${totalPrice}</span>
+		{#if cart.length > 0}
+			<div class="card-actions">
+				<form method="POST">
+					<input name="cart" type="hidden" value={JSON.stringify(cart)} />
+					<input name="totalPrice" type="hidden" value={totalPrice} />
+					<button class="btn btn-block btn-primary">Confirm order</button>
+				</form>
+			</div>
+		{/if}
 	</div>
 </div>
