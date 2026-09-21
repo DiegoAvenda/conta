@@ -1,10 +1,9 @@
 <script>
 	import { enhance } from '$app/forms';
 
-	export let data;
-	export let form;
+	let { data, form } = $props();
 
-	let uploading = false;
+	let uploading = $state(false);
 </script>
 
 <h1>Menú del negocio</h1>
