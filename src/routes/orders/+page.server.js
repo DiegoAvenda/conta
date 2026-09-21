@@ -3,7 +3,6 @@ import { ObjectId } from 'mongodb';
 
 const formatTime = (value) => {
 	if (!value) return null;
-
 	return new Date(value).toLocaleTimeString('en-US', {
 		hour: '2-digit',
 		minute: '2-digit',
@@ -12,13 +11,20 @@ const formatTime = (value) => {
 };
 
 export const load = async ({ url }) => {
+	// 1. Extraemos todos los posibles filtros de la URL
 	const status = url.searchParams.get('status') ?? 'pending';
-	const query =
-		status === 'prepared'
-			? { prepared: true, delivered: false }
-			: status === 'delivered'
-				? { delivered: true }
-				: { prepared: false, delivered: false };
+	const channel = url.searchParams.get('channel');
+	const orderType = url.searchParams.get('orderType');
+	const paymentStatus = url.searchParams.get('paymentStatus');
+
+	// 2. Construimos la query dinámicamente
+	// Si el frontend no manda un parámetro, simplemente no lo añadimos a la búsqueda
+	const query = {};
+
+	if (status !== 'all') query.status = status;
+	if (channel) query.channel = channel; // 'delivery' o 'restaurant'
+	if (orderType) query.orderType = orderType; // 'dine-in' o 'takeout'
+	if (paymentStatus) query.paymentStatus = paymentStatus; // 'paid' o 'unpaid'
 
 	try {
 		const db = await getDb();
@@ -30,64 +36,76 @@ export const load = async ({ url }) => {
 			_id: order._id.toString(),
 			customerId: order.customerId?.toString?.() ?? order.customerId,
 			createdAt: formatTime(order.createdAt),
-			preparedAt: formatTime(order.preparedAt),
-			deliveredAt: formatTime(order.deliveredAt)
+			preparingAt: formatTime(order.preparingAt),
+			readyAt: formatTime(order.readyAt),
+			completedAt: formatTime(order.completedAt)
 		}));
 
 		return {
 			orders,
-			selectedStatus: status
+			// Regresamos los filtros activos para que la UI sepa qué botones pintar como "activos"
+			filters: { status, channel, orderType, paymentStatus }
 		};
 	} catch (e) {
 		console.log(e);
-		return {
-			orders: [],
-			selectedStatus: status
-		};
+		return { orders: [], filters: {} };
 	}
 };
 
 export const actions = {
-	markPrepared: async ({ request }) => {
+	updateStatus: async ({ request }) => {
 		const data = await request.formData();
 		const orderId = data.get('orderId');
-		const objectId = new ObjectId(orderId);
+		const nextStatus = data.get('status');
 
-		try {
-			const db = await getDb();
-			const orders = db.collection('orders');
-			const filter = { _id: objectId };
-			const updateDoc = {
-				$set: {
-					prepared: true,
-					preparedAt: new Date()
-				}
-			};
-
-			await orders.updateOne(filter, updateDoc);
-		} catch (error) {
-			console.log(error);
+		if (!orderId || !nextStatus || typeof orderId !== 'string' || typeof nextStatus !== 'string') {
+			return { success: false };
 		}
+
+		const db = await getDb();
+		const orders = db.collection('orders');
+		const update = {
+			status: nextStatus,
+			prepared: nextStatus === 'completed' || nextStatus === 'ready',
+			delivered: nextStatus === 'completed'
+		};
+
+		if (nextStatus === 'preparing') {
+			update.preparingAt = new Date();
+		}
+		if (nextStatus === 'ready') {
+			update.readyAt = new Date();
+		}
+		if (nextStatus === 'completed') {
+			update.completedAt = new Date();
+		}
+
+		await orders.updateOne({ _id: new ObjectId(orderId) }, { $set: update });
+		return { success: true };
 	},
-	markDelivered: async ({ request }) => {
+	markPaid: async ({ request }) => {
 		const data = await request.formData();
 		const orderId = data.get('orderId');
-		const objectId = new ObjectId(orderId);
+		const paymentMethod = data.get('paymentMethod') ?? 'card';
 
-		try {
-			const db = await getDb();
-			const orders = db.collection('orders');
-			const filter = { _id: objectId };
-			const updateDoc = {
-				$set: {
-					delivered: true,
-					deliveredAt: new Date()
-				}
-			};
-
-			await orders.updateOne(filter, updateDoc);
-		} catch (error) {
-			console.log(error);
+		if (!orderId || typeof orderId !== 'string') {
+			return { success: false };
 		}
+
+		const db = await getDb();
+		const orders = db.collection('orders');
+		await orders.updateOne(
+			{ _id: new ObjectId(orderId) },
+			{
+				$set: {
+					paymentStatus: 'paid',
+					paymentMethod,
+					paidAt: new Date(),
+					updatedAt: new Date()
+				}
+			}
+		);
+
+		return { success: true };
 	}
 };

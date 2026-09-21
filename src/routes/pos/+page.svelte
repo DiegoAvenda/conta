@@ -65,7 +65,14 @@
 				<form method="POST">
 					<input name="cart" type="hidden" value={JSON.stringify(cart)} />
 					<input name="totalPrice" type="hidden" value={totalPrice} />
-					<button class="btn btn-block btn-primary">Confirm order</button>
+					<label class="form-control w-full">
+						<span class="label-text mb-1 text-xs">Payment</span>
+						<select name="paymentMethod" class="select-bordered select w-full select-sm">
+							<option value="cash">Cash</option>
+							<option value="card">Card / Terminal</option>
+						</select>
+					</label>
+					<button class="btn mt-3 btn-block btn-primary">Confirm order</button>
 				</form>
 			</div>
 		{/if}
