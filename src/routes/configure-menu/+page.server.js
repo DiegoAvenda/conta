@@ -1,15 +1,31 @@
 import { fail } from '@sveltejs/kit';
-import { put } from '@vercel/blob';
 import { ObjectId } from 'mongodb';
-import { db } from '$lib/server/db'; // ajusta al import real de tu conexión Mongo (mismo patrón que usas en el webhook de WhatsApp)
+import { getDb } from '$lib/server/db';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+// Asegúrate de tener estas variables de entorno en tu archivo .env
+import {
+	R2_ACCOUNT_ID,
+	R2_ACCESS_KEY_ID,
+	R2_SECRET_ACCESS_KEY,
+	R2_BUCKET_NAME,
+	R2_PUBLIC_URL
+} from '$env/static/private';
 
-// Límites impuestos por los List Messages de WhatsApp, porque cada item de
-// menú termina siendo una fila dentro de una sección de una lista estructurada.
+const s3Client = new S3Client({
+	region: 'auto',
+	endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+	credentials: {
+		accessKeyId: R2_ACCESS_KEY_ID,
+		secretAccessKey: R2_SECRET_ACCESS_KEY
+	}
+});
+
 const MAX_TITLE = 24;
 const MAX_DESC = 72;
 
 export async function load({ params }) {
-	const items = await db
+	const db = await getDb();
+	const items = db
 		.collection('menuItems')
 		.find({ businessId: params.businessId })
 		.sort({ category: 1, createdAt: 1 })
@@ -42,14 +58,32 @@ export const actions = {
 		}
 
 		let imageUrl = null;
+
+		// --- NUEVA LÓGICA DE CLOUDFLARE R2 ---
 		if (imageFile && imageFile.size > 0) {
-			const blob = await put(
-				`menu/${params.businessId}/${crypto.randomUUID()}-${imageFile.name}`,
-				imageFile,
-				{ access: 'public' }
+			// Generar nombre de archivo único
+			const fileName = `menu/${params.businessId}/${crypto.randomUUID()}-${imageFile.name.replace(/\s+/g, '-')}`;
+
+			// Convertir el archivo a un Buffer que S3 pueda leer
+			const arrayBuffer = await imageFile.arrayBuffer();
+			const buffer = Buffer.from(arrayBuffer);
+
+			// Subir a R2
+			await s3Client.send(
+				new PutObjectCommand({
+					Bucket: R2_BUCKET_NAME,
+					Key: fileName,
+					Body: buffer,
+					ContentType: imageFile.type
+				})
 			);
-			imageUrl = blob.url;
+
+			// Construir la URL pública (Cloudflare te permite asignar un subdominio público gratis)
+			imageUrl = `${R2_PUBLIC_URL}/${fileName}`;
 		}
+		// ---------------------------------------
+
+		const db = await getDb();
 
 		await db.collection('menuItems').insertOne({
 			businessId: params.businessId,
@@ -68,6 +102,12 @@ export const actions = {
 		const form = await request.formData();
 		const id = form.get('id')?.toString();
 		if (!id) return fail(400, { error: 'Falta el id.' });
+
+		const db = await getDb();
+
+		// Opcional: Aquí también podrías agregar lógica para borrar la imagen de R2
+		// usando DeleteObjectCommand para ahorrar espacio, aunque con 10GB gratis
+		// tomará mucho tiempo llenarlo.
 
 		await db.collection('menuItems').deleteOne({ _id: new ObjectId(id) });
 		return { success: true };
