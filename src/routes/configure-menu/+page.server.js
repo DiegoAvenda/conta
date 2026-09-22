@@ -1,8 +1,8 @@
 import { fail } from '@sveltejs/kit';
 import { ObjectId } from 'mongodb';
 import { getDb } from '$lib/server/db';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-// Asegúrate de tener estas variables de entorno en tu archivo .env
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+
 import {
 	R2_ACCOUNT_ID,
 	R2_ACCESS_KEY_ID,
@@ -25,20 +25,26 @@ const MAX_DESC = 72;
 
 export async function load({ params }) {
 	const db = await getDb();
-	const items = db
+
+	const items = await db
 		.collection('menuItems')
 		.find({ businessId: params.businessId })
 		.sort({ category: 1, createdAt: 1 })
 		.toArray();
 
 	return {
-		items: items.map((i) => ({ ...i, _id: i._id.toString() }))
+		items: items.map((item) => ({
+			...item,
+			_id: item._id.toString(),
+			imageUrl: item.imageKey ? `${R2_PUBLIC_URL}/${item.imageKey}` : null
+		}))
 	};
 }
 
 export const actions = {
 	create: async ({ request, params }) => {
 		const form = await request.formData();
+
 		const name = form.get('name')?.toString().trim();
 		const description = form.get('description')?.toString().trim() ?? '';
 		const category = form.get('category')?.toString().trim();
@@ -46,42 +52,56 @@ export const actions = {
 		const imageFile = form.get('image');
 
 		if (!name || !category || Number.isNaN(price)) {
-			return fail(400, { error: 'Nombre, categoría y precio son requeridos.' });
+			return fail(400, {
+				error: 'Nombre, categoría y precio son requeridos.'
+			});
 		}
+
 		if (name.length > MAX_TITLE || category.length > MAX_TITLE) {
 			return fail(400, {
 				error: `Nombre y categoría no pueden pasar de ${MAX_TITLE} caracteres (límite de listas de WhatsApp).`
 			});
 		}
+
 		if (description.length > MAX_DESC) {
-			return fail(400, { error: `La descripción no puede pasar de ${MAX_DESC} caracteres.` });
+			return fail(400, {
+				error: `La descripción no puede pasar de ${MAX_DESC} caracteres.`
+			});
 		}
 
-		let imageUrl = null;
+		let imageKey = null;
 
-		// --- NUEVA LÓGICA DE CLOUDFLARE R2 ---
-		if (imageFile && imageFile.size > 0) {
-			// Generar nombre de archivo único
+		if (imageFile instanceof File && imageFile.size > 0) {
+			if (!imageFile.type.startsWith('image/')) {
+				return fail(400, {
+					error: 'El archivo debe ser una imagen.'
+				});
+			}
+
 			const fileName = `menu/${params.businessId}/${crypto.randomUUID()}-${imageFile.name.replace(/\s+/g, '-')}`;
 
-			// Convertir el archivo a un Buffer que S3 pueda leer
 			const arrayBuffer = await imageFile.arrayBuffer();
 			const buffer = Buffer.from(arrayBuffer);
 
-			// Subir a R2
-			await s3Client.send(
-				new PutObjectCommand({
-					Bucket: R2_BUCKET_NAME,
-					Key: fileName,
-					Body: buffer,
-					ContentType: imageFile.type
-				})
-			);
+			try {
+				await s3Client.send(
+					new PutObjectCommand({
+						Bucket: R2_BUCKET_NAME,
+						Key: fileName,
+						Body: buffer,
+						ContentType: imageFile.type
+					})
+				);
 
-			// Construir la URL pública (Cloudflare te permite asignar un subdominio público gratis)
-			imageUrl = `${R2_PUBLIC_URL}/${fileName}`;
+				imageKey = fileName;
+			} catch (error) {
+				console.error('Error al subir imagen a R2:', error);
+
+				return fail(500, {
+					error: 'No se pudo subir la imagen.'
+				});
+			}
 		}
-		// ---------------------------------------
 
 		const db = await getDb();
 
@@ -91,25 +111,56 @@ export const actions = {
 			description,
 			category,
 			price,
-			imageUrl,
+			imageKey,
 			createdAt: new Date()
 		});
 
-		return { success: true };
+		return {
+			success: true
+		};
 	},
 
 	delete: async ({ request }) => {
 		const form = await request.formData();
 		const id = form.get('id')?.toString();
-		if (!id) return fail(400, { error: 'Falta el id.' });
+
+		if (!id || !ObjectId.isValid(id)) {
+			return fail(400, {
+				error: 'El ID del producto no es válido.'
+			});
+		}
 
 		const db = await getDb();
 
-		// Opcional: Aquí también podrías agregar lógica para borrar la imagen de R2
-		// usando DeleteObjectCommand para ahorrar espacio, aunque con 10GB gratis
-		// tomará mucho tiempo llenarlo.
+		const item = await db.collection('menuItems').findOne({
+			_id: new ObjectId(id)
+		});
 
-		await db.collection('menuItems').deleteOne({ _id: new ObjectId(id) });
-		return { success: true };
+		if (!item) {
+			return fail(404, {
+				error: 'El producto no existe.'
+			});
+		}
+
+		if (item.imageKey) {
+			try {
+				await s3Client.send(
+					new DeleteObjectCommand({
+						Bucket: R2_BUCKET_NAME,
+						Key: item.imageKey
+					})
+				);
+			} catch (error) {
+				console.error('Error al eliminar imagen de R2:', error);
+			}
+		}
+
+		await db.collection('menuItems').deleteOne({
+			_id: new ObjectId(id)
+		});
+
+		return {
+			success: true
+		};
 	}
 };
