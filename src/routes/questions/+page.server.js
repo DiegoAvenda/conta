@@ -1,48 +1,24 @@
 import { fail } from '@sveltejs/kit';
 import { getDb } from '$lib/server/db.js';
 
-const VERSION_REGLAS = 1;
+const VERSION_REGLAS = 2;
 
-function calcularRegimen(canal, montoLocal, montoApps) {
-	if (canal === 'local') {
-		if (montoLocal === 'alto') {
-			return {
-				codigo: 'fuera_de_resico',
-				regimenesSat: [],
-				requiereContador: true
-			};
-		}
+function calcularRegimenDirecto(montoAnual) {
+	if (montoAnual === 'alto') {
 		return {
-			codigo: 'resico',
-			regimenesSat: [621],
-			requiereContador: false
-		};
-	}
-
-	if (canal === 'apps') {
-		if (montoApps === 'bajo') {
-			return {
-				codigo: 'plataformas_pago_definitivo',
-				regimenesSat: [625],
-				requiereContador: false
-			};
-		}
-		return {
-			codigo: 'plataformas_pago_provisional',
-			regimenesSat: [625],
-			requiereContador: false
+			codigo: 'actividad_empresarial',
+			regimenesSat: [612],
+			requiereContador: true,
+			esPreliminar: true
 		};
 	}
 
 	return {
-		codigo: 'hibrido',
-		regimenesSat: [612, 625],
-		requiereContador: false
+		codigo: 'resico',
+		regimenesSat: [626],
+		requiereContador: false,
+		esPreliminar: true
 	};
-}
-
-function calcularMonetizacion(codigoRegimen) {
-	return codigoRegimen === 'plataformas_pago_definitivo' ? 'gratis_anuncios' : 'suscripcion';
 }
 
 export const actions = {
@@ -54,17 +30,13 @@ export const actions = {
 		}
 
 		const datos = await request.formData();
-		const canal = datos.get('canal');
-		const montoLocal = datos.get('montoLocal') || null;
-		const montoApps = datos.get('montoApps') || null;
+		const montoAnual = datos.get('montoAnual');
 
-		if (!['apps', 'local', 'ambos'].includes(canal)) {
-			return fail(400, { mensaje: 'Respuestas del cuestionario incompletas.' });
+		if (!['bajo', 'alto'].includes(montoAnual)) {
+			return fail(400, { mensaje: 'Indica una estimación de facturación anual.' });
 		}
 
-		const regimenFiscal = calcularRegimen(canal, montoLocal, montoApps);
-		const monetizacion = calcularMonetizacion(regimenFiscal.codigo);
-
+		const regimenFiscal = calcularRegimenDirecto(montoAnual);
 		const db = await getDb();
 		const ahora = new Date();
 
@@ -74,14 +46,13 @@ export const actions = {
 				$set: {
 					userId: usuario.id,
 					onboarding: {
-						canalVenta: canal,
-						facturacionLocalAnual: montoLocal,
-						facturacionAppsAnual: montoApps,
+						ventaDirecta: true,
+						facturacionDirectaAnual: montoAnual,
 						completadoEn: ahora,
 						versionReglas: VERSION_REGLAS
 					},
 					regimenFiscal,
-					monetizacion,
+					monetizacion: 'suscripcion',
 					updatedAt: ahora
 				},
 				$setOnInsert: { createdAt: ahora }

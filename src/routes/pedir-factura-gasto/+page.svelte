@@ -3,310 +3,150 @@
 	import { resolve } from '$app/paths';
 
 	let { data, form } = $props();
-
-	// State de la tarjeta de datos fiscales del usuario
 	let copiado = $state(false);
-	let pestañaActiva = $state('tarjeta');
 	let editandoRfc = $state(false);
 	let guardando = $state(false);
-
-	// el RFC viene de businessProfile (Mongo); se resetea cuando data.rfc cambia
-	// (por ejemplo, justo después de guardar y que SvelteKit vuelva a correr el load)
 	let rfcInput = $derived(data.rfc);
+
 	$effect(() => {
 		rfcInput = data.rfc;
 	});
 
-	// TODO: el resto de estos campos siguen siendo estáticos. Si van a salir del
-	// cuestionario de onboarding (ya guardado en businessProfile), hay que traerlos
-	// del mismo load() de arriba en vez de dejarlos hardcodeados aquí.
-	const datosFiscales = {
-		razonSocial: 'DIEGO DE JESUS AVENDAÑO HERNANDEZ',
-		codigoPostal: '76246',
-		regimen: '612 - Personas Físicas con Actividades Empresariales y Profesionales',
-		usoMercancias: 'G01 - Adquisición de mercancías (Ingredientes/Bebidas)',
-		usoGastos: 'G03 - Gastos en general (Empaques/Luz/Gas)'
-	};
+	const regimen = $derived(
+		data.regimenFiscal === 'resico'
+			? '626 - Régimen Simplificado de Confianza'
+			: data.regimenFiscal === 'actividad_empresarial'
+				? '612 - Personas Físicas con Actividades Empresariales y Profesionales'
+				: 'Confirma tu régimen en la Constancia de Situación Fiscal'
+	);
 
-	// Reglas educativas del esquema híbrido
-	const reglasFacturacion = [
-		{
-			id: 1,
-			titulo: 'Pide SIEMPRE bajo el Régimen 612',
-			icono: '🏪',
-			resumen: 'Todas las compras pertenecen a tu actividad empresarial global.',
-			detalle:
-				'Nunca pidas facturas bajo el Régimen 625 (Plataformas Tecnológicas). Las plataformas son solo un canal de venta y retención; tus proveedores de insumos deben facturarte bajo Actividad Empresarial.',
-			tipo: 'error_comun',
-			badge: 'Regla de Oro'
-		},
-		{
-			id: 2,
-			titulo: 'Misma compra para Uber Eats y WhatsApp',
-			icono: '🥤',
-			resumen: 'Un solo inventario alimenta ambos canales de venta.',
-			detalle:
-				'Aunque compres café, carne o refrescos que venderás tanto por Uber Eats como en mostrador/WhatsApp, la factura de compra se pide exactamente igual bajo el Régimen 612.',
-			tipo: 'info',
-			badge: 'Operación Híbrida'
-		},
-		{
-			id: 3,
-			titulo: 'Cuidado con los pagos en efectivo',
-			icono: '💳',
-			resumen: 'Compras mayores a $2,000 MXN en efectivo NO son deducibles.',
-			detalle:
-				'Si el total del ticket supera los $2,000.00 MXN, debes pagar obligatoriamente con tarjeta de débito/crédito a tu nombre, transferencia SPEI o cheque para que el SAT valide el gasto.',
-			tipo: 'alerta',
-			badge: 'Límite SAT'
-		},
-		{
-			id: 4,
-			titulo: 'Uso correcto del CFDI',
-			icono: '🏷️',
-			resumen: 'Diferencia entre materia prima y suministros de la cocina.',
-			detalle:
-				'Usa "G01 Adquisición de mercancías" para todo lo que se transforma o revende (alimentos, insumos, bebidas). Usa "G03 Gastos en general" para bolsas, servilletas, productos de limpieza y servicios.',
-			tipo: 'info',
-			badge: 'Clasificación'
-		}
-	];
-
-	function copiarDatosWhatsApp() {
-		const texto = `Hola, me apoyas con la factura de mi compra con los siguientes datos fiscales:
-
-*RFC:* ${data.rfc}
-*Nombre/Razón Social:* ${datosFiscales.razonSocial}
-*C.P.:* ${datosFiscales.codigoPostal}
-*Régimen Fiscal:* ${datosFiscales.regimen}
-*Uso de CFDI:* ${datosFiscales.usoMercancias}`;
-
+	function copiarDatos() {
+		const texto = `Hola, ¿me apoyas con la factura de mi compra?\n\n*RFC:* ${data.rfc}\n*Nombre/Razón Social:* [como aparece en mi Constancia]\n*C.P. del domicilio fiscal:* [como aparece en mi Constancia]\n*Régimen Fiscal:* ${regimen}\n*Uso de CFDI:* [confirmar según la compra]`;
 		navigator.clipboard.writeText(texto);
 		copiado = true;
 		setTimeout(() => (copiado = false), 3000);
 	}
 </script>
 
-<div class="mx-auto max-w-4xl space-y-6 p-4 font-sans">
-	<!-- Header del Módulo -->
-	<header
-		class="flex flex-col items-start justify-between gap-4 rounded-2xl border border-base-300 bg-base-200 p-6 sm:flex-row sm:items-center"
-	>
-		<div>
-			<span class="mb-2 badge font-mono text-xs badge-primary">Paso Previo a Carga de Gastos</span>
-			<h1 class="text-2xl font-black">Guía para Solicitar Facturas</h1>
-			<p class="mt-1 text-xs text-base-content/70">
-				Asegura que cada insumo de tu cocina sea 100% deducible ante el SAT.
-			</p>
-		</div>
-
-		<!-- Selector de Vista -->
-		<div class="join rounded-xl border border-base-300 bg-base-100 p-1">
-			<button
-				class="btn join-item font-mono btn-sm {pestañaActiva === 'tarjeta'
-					? 'btn-primary'
-					: 'btn-ghost'}"
-				onclick={() => (pestañaActiva = 'tarjeta')}
-			>
-				🎴 Ficha Fiscal
-			</button>
-			<button
-				class="btn join-item font-mono btn-sm {pestañaActiva === 'reglas'
-					? 'btn-primary'
-					: 'btn-ghost'}"
-				onclick={() => (pestañaActiva = 'reglas')}
-			>
-				📖 4 Reglas SAT
-			</button>
-		</div>
+<main class="mx-auto max-w-4xl space-y-6 p-4 sm:p-8">
+	<header class="rounded-3xl border border-base-300 bg-base-200 p-6 sm:p-8">
+		<p class="font-mono text-xs font-bold tracking-widest text-primary">GASTOS DEL NEGOCIO</p>
+		<h1 class="mt-2 text-3xl font-black">Pide tus facturas con datos correctos</h1>
+		<p class="mt-3 max-w-2xl text-sm leading-relaxed text-base-content/70">
+			Este MVP registra gastos de un restaurante con ventas directas. Revisa siempre tu Constancia
+			de Situación Fiscal antes de solicitar un CFDI.
+		</p>
 	</header>
 
-	{#if pestañaActiva === 'tarjeta'}
-		<!-- VISTA 1: TARJETA DIGITAL DE DATOS FISCALES -->
-		<section class="grid grid-cols-1 items-start gap-6 md:grid-cols-12">
-			<!-- Visualización de la Tarjeta Digital -->
-			<div
-				class="relative space-y-6 overflow-hidden rounded-3xl border border-slate-700 bg-linear-to-br from-slate-900 via-slate-800 to-zinc-900 p-6 text-white shadow-xl md:col-span-7"
-			>
-				<div
-					class="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-primary/20 blur-2xl"
-				></div>
-
-				<div class="flex items-start justify-between">
-					<div>
-						<span class="block font-mono text-[10px] tracking-widest text-slate-400 uppercase"
-							>Datos Fiscales Deducibles</span
-						>
-						<h2 class="text-lg font-black tracking-tight text-white">
-							{datosFiscales.razonSocial}
-						</h2>
-					</div>
-					<span class="badge font-mono text-[10px] font-bold badge-success">RÉGIMEN 612</span>
+	<section class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+		<div class="rounded-3xl bg-slate-900 p-6 text-white shadow-xl">
+			<div class="flex items-start justify-between gap-4">
+				<div>
+					<p class="font-mono text-[10px] tracking-widest text-slate-400 uppercase">
+						Datos fiscales
+					</p>
+					<h2 class="mt-1 text-lg font-black">Tu negocio</h2>
 				</div>
+				<span class="badge font-mono text-[10px] badge-success">VENTA DIRECTA</span>
+			</div>
 
-				<div class="space-y-3 font-mono text-xs">
-					<!-- RFC: ahora editable y respaldado en businessProfile -->
-					<div class="rounded-xl border border-slate-700/50 bg-slate-800/80 p-3">
-						<span class="block text-[10px] text-slate-400">RFC</span>
-
-						{#if editandoRfc}
-							<form
-								method="POST"
-								action="?/guardarRfc"
-								use:enhance={() => {
-									guardando = true;
-									return async ({ update }) => {
-										await update();
-										guardando = false;
-										editandoRfc = false;
-									};
+			<div class="mt-6 space-y-3 font-mono text-sm">
+				<div class="rounded-2xl border border-slate-700 bg-slate-800/80 p-4">
+					<p class="text-[10px] text-slate-400">RFC</p>
+					{#if editandoRfc}
+						<form
+							method="POST"
+							action="?/guardarRfc"
+							use:enhance={() => {
+								guardando = true;
+								return async ({ update }) => {
+									await update();
+									guardando = false;
+									if (!form?.error) editandoRfc = false;
+								};
+							}}
+							class="mt-2 flex flex-wrap items-center gap-2"
+						>
+							<input
+								name="rfc"
+								bind:value={rfcInput}
+								maxlength="13"
+								class="input w-full bg-slate-950 uppercase input-sm sm:w-auto"
+								required
+							/>
+							<button class="btn btn-success btn-xs" type="submit" disabled={guardando}>
+								{guardando ? 'Guardando…' : 'Guardar'}
+							</button>
+							<button
+								class="btn btn-ghost btn-xs"
+								type="button"
+								onclick={() => {
+									editandoRfc = false;
+									rfcInput = data.rfc;
 								}}
-								class="mt-1 flex items-center gap-2"
 							>
-								<input
-									name="rfc"
-									bind:value={rfcInput}
-									maxlength="13"
-									class="input-bordered input bg-slate-900 font-bold text-emerald-400 uppercase input-sm"
-									required
-								/>
-								<button type="submit" class="btn btn-success btn-xs" disabled={guardando}>
-									{guardando ? '...' : 'Guardar'}
-								</button>
-								<button
-									type="button"
-									class="btn btn-ghost btn-xs"
-									onclick={() => {
-										editandoRfc = false;
-										rfcInput = data.rfc;
-									}}
-								>
-									Cancelar
-								</button>
-							</form>
-
-							{#if form?.error}
-								<p class="mt-1 text-[10px] text-red-400">{form.error}</p>
-							{/if}
-						{:else}
-							<div class="flex items-center gap-2">
-								<span class="text-base font-bold text-emerald-400">
-									{data.rfc || 'Sin RFC registrado'}
-								</span>
-								<button class="btn btn-ghost btn-xs" onclick={() => (editandoRfc = true)}>
-									✎ Editar
-								</button>
-							</div>
-						{/if}
-					</div>
-
-					<div class="grid grid-cols-2 gap-2">
-						<div class="rounded-xl border border-slate-700/50 bg-slate-800/80 p-2.5">
-							<span class="block text-[10px] text-slate-400">Código Postal</span>
-							<span class="font-bold">{datosFiscales.codigoPostal}</span>
-						</div>
-						<div class="rounded-xl border border-slate-700/50 bg-slate-800/80 p-2.5">
-							<span class="block text-[10px] text-slate-400">Uso Preferente</span>
-							<span class="font-bold text-amber-300">G01 Mercancías</span>
-						</div>
-					</div>
-
-					<div class="rounded-xl border border-slate-700/50 bg-slate-800/80 p-2.5">
-						<span class="block text-[10px] text-slate-400">Régimen Fiscal SAT</span>
-						<span class="text-[11px] font-semibold text-slate-200">{datosFiscales.regimen}</span>
-					</div>
-				</div>
-
-				<button
-					onclick={copiarDatosWhatsApp}
-					disabled={!data.rfc}
-					class="btn-emerald-500 btn w-full gap-2 border-none bg-emerald-600 text-xs font-bold text-white shadow-lg hover:bg-emerald-500 disabled:opacity-50"
-				>
-					{#if copiado}
-						<span>¡Copiado al Portapapeles! 📑</span>
-					{:else if !data.rfc}
-						<span>Primero registra tu RFC ☝️</span>
+								Cancelar
+							</button>
+						</form>
+						{#if form?.error}<p class="mt-2 text-xs text-red-300">{form.error}</p>{/if}
 					{:else}
-						<span>Copiar Texto para Proveedores / WhatsApp 📲</span>
-					{/if}
-				</button>
-			</div>
-
-			<!-- Instrucciones de Uso Rápido -->
-			<div class="space-y-4 rounded-2xl border border-base-200 bg-base-100 p-5 md:col-span-5">
-				<h3 class="flex items-center gap-2 text-base font-black">
-					<span>💡</span> ¿Cómo usar esta ficha?
-				</h3>
-
-				<ol
-					class="list-inside list-decimal space-y-3 text-xs leading-relaxed font-medium text-base-content/80"
-				>
-					<li class="pl-1">
-						<strong class="text-base-content">En el mostrador:</strong> Muestra esta pantalla al cajero
-						en Central de Abastos, Sam's Club, Costco o supermercados.
-					</li>
-					<li class="pl-1">
-						<strong class="text-base-content">Por WhatsApp:</strong> Presiona el botón verde para copiar
-						el bloque de texto y enviarlo a tus proveedores de carne, verduras o refrescos.
-					</li>
-					<li class="pl-1">
-						<strong class="text-base-content">Portales WEB:</strong> Usa el régimen
-						<strong>612</strong> cuando te pida ingresar datos en portales automáticos de facturación.
-					</li>
-				</ol>
-
-				<div class="alert rounded-xl border border-info/30 p-3 text-[11px] alert-info">
-					<span
-						>ℹ️ Muestra siempre el Uso <strong>G01</strong> para tus compras de materia prima.</span
-					>
-				</div>
-			</div>
-		</section>
-	{:else}
-		<!-- VISTA 2: REGLAS DE ORO SAT PARA EL GIRO DE COMIDA -->
-		<section class="grid grid-cols-1 gap-4 md:grid-cols-2">
-			{#each reglasFacturacion as regla (regla.id)}
-				<div
-					class="flex flex-col justify-between space-y-3 rounded-2xl border border-base-200 bg-base-100 p-5 shadow-sm"
-				>
-					<div class="space-y-2">
-						<div class="flex items-center justify-between">
-							<span class="text-2xl">{regla.icono}</span>
-							<span class="badge badge-outline font-mono text-[10px]">{regla.badge}</span>
+						<div class="mt-1 flex items-center gap-3">
+							<strong class="text-base text-emerald-400">{data.rfc || 'Sin RFC registrado'}</strong>
+							<button class="btn btn-ghost btn-xs" onclick={() => (editandoRfc = true)}
+								>Editar</button
+							>
 						</div>
+					{/if}
+				</div>
 
-						<h3 class="text-base font-black">{regla.titulo}</h3>
-						<p class="text-xs font-semibold text-primary">{regla.resumen}</p>
-						<p class="text-xs leading-relaxed text-base-content/70">{regla.detalle}</p>
+				<div class="grid gap-3 sm:grid-cols-2">
+					<div class="rounded-2xl border border-slate-700 bg-slate-800/80 p-4">
+						<p class="text-[10px] text-slate-400">Régimen fiscal</p>
+						<p class="mt-1 text-xs leading-relaxed font-semibold">{regimen}</p>
 					</div>
-
-					{#if regla.tipo === 'error_comun'}
-						<div
-							class="rounded-r-lg border-l-2 border-error bg-error/10 p-2 text-[11px] font-semibold text-error"
-						>
-							❌ Nunca solicites facturas con Régimen 625 (Plataformas).
-						</div>
-					{:else if regla.tipo === 'alerta'}
-						<div
-							class="rounded-r-lg border-l-2 border-warning bg-warning/10 p-2 text-[11px] font-semibold text-warning-content"
-						>
-							⚠️ Evita efectivo en compras > $2,000 MXN.
-						</div>
-					{/if}
+					<div class="rounded-2xl border border-slate-700 bg-slate-800/80 p-4">
+						<p class="text-[10px] text-slate-400">Código postal</p>
+						<p class="mt-1 text-xs font-semibold">Consúltalo en tu Constancia</p>
+					</div>
 				</div>
-			{/each}
-		</section>
-	{/if}
+			</div>
 
-	<!-- Footer / Siguiente Paso -->
-	<footer class="flex items-center justify-between border-t border-base-200 pt-4">
-		<a href={resolve('/onboarding/guia-sat')} class="btn btn-ghost font-mono btn-sm">
-			&larr; Volver a Guía SAT
-		</a>
+			<button
+				class="btn mt-6 w-full border-none bg-emerald-600 text-white hover:bg-emerald-500"
+				onclick={copiarDatos}
+				disabled={!data.rfc}
+			>
+				{copiado ? 'Datos copiados' : 'Copiar datos para proveedor'}
+			</button>
+		</div>
 
-		<a href={resolve('/gastos/cargar')} class="btn gap-2 font-bold btn-primary btn-sm">
-			<span>Entendido, ir a Registro de Gastos</span>
-			<span>&rarr;</span>
-		</a>
+		<aside class="rounded-3xl border border-base-300 bg-base-100 p-6">
+			<h2 class="font-black">Antes de pedir un CFDI</h2>
+			<ol class="mt-4 space-y-4 text-sm leading-relaxed text-base-content/75">
+				<li>
+					<strong class="text-base-content">1. Confirma tu Constancia.</strong> Nombre, RFC, código postal
+					y régimen deben coincidir.
+				</li>
+				<li>
+					<strong class="text-base-content">2. Relaciona el gasto.</strong> Conserva el CFDI y el comprobante
+					de pago de compras del restaurante.
+				</li>
+				<li>
+					<strong class="text-base-content">3. Revisa antes de cargar.</strong> Si un dato no cuadra,
+					solicita corrección al proveedor.
+				</li>
+			</ol>
+			<div class="mt-6 alert text-xs alert-info">
+				<span
+					>Esta guía ayuda a organizar gastos; la deducibilidad final depende de la operación y de
+					los datos fiscales correctos.</span
+				>
+			</div>
+		</aside>
+	</section>
+
+	<footer class="flex flex-wrap justify-between gap-3 border-t border-base-300 pt-5">
+		<a href={resolve('/inscripcion')} class="btn btn-ghost btn-sm">← Guía SAT</a>
+		<a href={resolve('/egresos')} class="btn btn-primary btn-sm">Ir a registrar gastos →</a>
 	</footer>
-</div>
+</main>

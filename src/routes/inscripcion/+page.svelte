@@ -42,14 +42,16 @@
 	<h2>{paso.titulo}</h2>
 	<p class="texto-pantalla">{paso.texto}</p>
 
-	<div class="imagen-wrapper">
-		<img
-			src={paso.imagen}
-			alt={`Captura de pantalla del SAT — ${paso.titulo}`}
-			onerror={manejarErrorImagen}
-		/>
-		<div class="imagen-placeholder">📸 Captura de pantalla del paso {paso.numero}</div>
-	</div>
+	{#if paso.imagen}
+		<div class="imagen-wrapper">
+			<img
+				src={paso.imagen}
+				alt={`Captura de pantalla del SAT — ${paso.titulo}`}
+				onerror={manejarErrorImagen}
+			/>
+			<div class="imagen-placeholder">📸 Captura de pantalla del paso {paso.numero}</div>
+		</div>
+	{/if}
 
 	{#if paso.nota}
 		<p class="nota">⚠️ {paso.nota}</p>

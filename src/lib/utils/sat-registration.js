@@ -1,123 +1,54 @@
-import inscripcion1 from '$lib/assets/images/inscripcion/inscripcion-sat1.png';
-import inscripcion2 from '$lib/assets/images/inscripcion/inscripcion-sat2.png';
-import inscripcion3 from '$lib/assets/images/inscripcion/inscripcion-sat3.png';
-import inscripcion4 from '$lib/assets/images/inscripcion/inscripcion-sat4.png';
-import inscripcion5 from '$lib/assets/images/inscripcion/inscripcion-sat5.png';
-import inscripcion6 from '$lib/assets/images/inscripcion/inscripcion-sat6.png';
-import inscripcion7 from '$lib/assets/images/inscripcion/inscripcion-sat7.png';
-import inscripcion8 from '$lib/assets/images/inscripcion/inscripcion-sat8.png';
-import inscripcion9 from '$lib/assets/images/inscripcion/inscripcion-sat9.png';
-import inscripcion10 from '$lib/assets/images/inscripcion/inscripcion-sat10.png';
-import inscripcion11 from '$lib/assets/images/inscripcion/inscripcion-sat11.png';
-
+// Guía deliberadamente general: los textos y pantallas del portal pueden cambiar.
+// El MVP solo contempla un restaurante con ventas directas.
 export const pasos = [
 	{
 		numero: 1,
-		titulo: 'Selección del trámite en el Portal del SAT',
+		titulo: 'Revisa tu situación fiscal actual',
 		texto:
-			'Entra al portal del SAT (sat.gob.mx) en la sección "Inscripción y avisos al RFC para Personas".',
-		acciones: ['Haz clic en la opción "Actualiza tu actividad económica y obligaciones".'],
-		imagen: inscripcion1
+			'Consulta tu Constancia de Situación Fiscal antes de hacer cambios. La información de esta guía es orientativa y no sustituye asesoría contable.',
+		acciones: [
+			'Revisa que tu RFC, nombre, código postal y obligaciones actuales sean correctos.',
+			'Ten lista tu Contraseña o e.firma vigente para entrar al portal del SAT.'
+		]
 	},
 	{
 		numero: 2,
-		titulo: 'Requisitos e inicio del proceso',
+		titulo: 'Actualiza actividades y obligaciones',
 		texto:
-			'Revisa los requisitos para realizar el trámite. Necesitarás tu Contraseña o e.firma vigente.',
-		acciones: ['Haz clic en el botón "Iniciar" para abrir el formulario de actualización.'],
-		imagen: inscripcion2
+			'En el portal del SAT, entra al trámite de actualización de actividades económicas y obligaciones para personas físicas.',
+		acciones: [
+			'Indica la fecha de inicio o modificación de tu actividad.',
+			'Selecciona únicamente el origen de ingresos que corresponda a ventas directas de tu negocio.'
+		]
 	},
 	{
 		numero: 3,
-		titulo: 'Inicio de sesión (Autenticación)',
-		texto: 'Ingresa tus credenciales de acceso.',
+		titulo: 'Elige tu actividad de alimentos y bebidas',
+		texto:
+			'Busca la actividad económica que describa con mayor precisión tu restaurante, venta de alimentos preparados o comida para llevar.',
 		acciones: [
-			'Escribe tu RFC, Contraseña y el código Captcha que se muestra en pantalla (o selecciona la opción de acceso con e.firma) y haz clic en "Enviar".'
-		],
-		imagen: inscripcion3
+			'Revisa la descripción de la actividad antes de confirmarla.',
+			'No agregues obligaciones de intermediación digital en este MVP si no vendes mediante plataformas.'
+		]
 	},
 	{
 		numero: 4,
-		titulo: 'Fecha de actualización de actividades',
-		texto: 'Indica la fecha en la que realizas o iniciarás el cambio de actividades.',
+		titulo: 'Confirma el régimen aplicable',
+		texto:
+			'El perfil inicial de Contaco sugiere RESICO o Actividad Empresarial según la facturación estimada, pero tu Constancia y tu contador son la fuente de verdad.',
 		acciones: [
-			'Selecciona la "Fecha de movimiento" en el calendario.',
-			'Si estás realizando el trámite a título personal, ignora los campos de representante legal y haz clic en "Continuar".'
-		],
-		imagen: inscripcion4
+			'Confirma que el régimen y las obligaciones que muestra el portal correspondan a tu situación real.',
+			'Si tienes otras actividades, socios, empleados u operaciones especiales, consulta a un contador antes de enviar el trámite.'
+		]
 	},
 	{
 		numero: 5,
-		titulo: 'Selección del tipo de ingreso',
-		texto: 'Marca el origen de los ingresos de tu negocio.',
+		titulo: 'Guarda tu acuse y actualiza Contaco',
+		texto:
+			'Finaliza el trámite únicamente después de revisar el resumen. Conserva el acuse y la Constancia actualizada.',
 		acciones: [
-			'Selecciona únicamente estas dos casillas: "Realizas actividades empresariales (comerciales, industriales, agrícolas...)" y "Actividades empresariales con ingresos por la enajenación de bienes o la prestación de servicios a través de internet, plataformas, aplicaciones informáticas y similares".',
-			'Haz clic en "Continuar".'
-		],
-		nota: 'No marques la casilla de RESICO para evitar inconsistencias con plataformas.',
-		imagen: inscripcion5
-	},
-	{
-		numero: 6,
-		titulo: 'Selección del grupo de actividad económica',
-		texto: 'Identifica los grupos a los que pertenecen tus actividades.',
-		acciones: [
-			'Selecciona el icono correspondiente a "Actividades empresariales" y el grupo de "Actividades a través de Internet/Plataformas".',
-			'Haz clic en "Continuar".'
-		],
-		imagen: inscripcion6
-	},
-	{
-		numero: 7,
-		titulo: 'Ubicar las actividades específicas (giro de comida)',
-		texto: 'Busca el giro específico de alimentos en ambas modalidades.',
-		acciones: [
-			'En Actividades empresariales: ve al grupo "Alimentos y bebidas" y selecciona "Restaurantes de comida para llevar".',
-			'En Plataformas tecnológicas: ve a "Alimentos y bebidas" y selecciona "Servicio de entrega de alimentos preparados a través de Internet, aplicaciones informáticas y similares".',
-			'Haz clic en "Continuar".'
-		],
-		imagen: inscripcion7
-	},
-	{
-		numero: 8,
-		titulo: 'Asignación de porcentajes y forma de trabajo',
-		texto: 'Especifica el porcentaje de ingresos de cada actividad y cómo realizas tu trabajo.',
-		acciones: [
-			'Selecciona la opción "Por cuenta propia" para ambas actividades.',
-			'Asigna el porcentaje estimado de ingresos a cada una, de manera que el total sume exactamente 100% (por ejemplo: 51% y 49%).',
-			'En la ventana emergente de plataformas, responde si tus ingresos excederán los $300,000 pesos anuales (por ejemplo, selecciona "pagos provisionales") y haz clic en "Listo".',
-			'Haz clic en "Continuar".'
-		],
-		imagen: inscripcion8
-	},
-	{
-		numero: 9,
-		titulo: 'Preguntas complementarias sobre trabajadores',
-		texto: 'Responde la pregunta sobre la contratación de personal.',
-		acciones: [
-			'Si vas a operar por tu cuenta sin empleados en nómina formal, selecciona "No tendrás trabajadores o asimilados a salarios".',
-			'Haz clic en "Aceptar" y luego en "Continuar".'
-		],
-		imagen: inscripcion9
-	},
-	{
-		numero: 10,
-		titulo: 'Relación de retenedores (opcional)',
-		texto: 'Captura el RFC de las plataformas tecnológicas con las que trabajarás.',
-		acciones: [
-			'Si cuentas con el RFC de la plataforma con la que vas a vender, puedes registrarlo en esta sección.',
-			'Si no dispones del dato en este momento, déjalo en blanco y haz clic directamente en "Continuar".'
-		],
-		imagen: inscripcion10
-	},
-	{
-		numero: 11,
-		titulo: 'Resumen y confirmación final',
-		texto: 'Revisión general de las actividades y obligaciones asignadas.',
-		acciones: [
-			'Confirma que aparezcan de alta el Régimen 612 (Actividades Empresariales) y el Régimen 625 (Plataformas Tecnológicas).',
-			'Haz clic en el botón azul "Guardar datos del cuestionario" para generar y descargar tu acuse definitivo en PDF.'
-		],
-		imagen: inscripcion11
+			'Descarga el acuse de actualización.',
+			'Usa los datos de la Constancia al configurar tu perfil y pedir CFDI a proveedores.'
+		]
 	}
 ];

@@ -1,4 +1,5 @@
 import { crearVenta, listarVentas, eliminarVenta } from '$lib/server/ventas.js';
+import { parseMoneyToCents } from '$lib/server/money.js';
 import { fail } from '@sveltejs/kit';
 
 export async function load({ locals }) {
@@ -10,13 +11,37 @@ export async function load({ locals }) {
 export const actions = {
 	crear: async ({ request, locals }) => {
 		const userId = locals.user.id;
-		const datos = Object.fromEntries(await request.formData());
+		const datos = await request.formData();
+		const amount = datos.get('amount');
+		const date = datos.get('date');
+		const paymentMethod = datos.get('paymentMethod')?.toString().trim();
+		const iva = datos.get('iva');
 
-		if (!datos.amount || !datos.date) {
-			return fail(400, { error: 'Faltan datos obligatorios' });
+		if (!date) {
+			return fail(400, { error: 'La fecha es obligatoria.' });
 		}
 
-		await crearVenta(userId, datos);
+		let amountCents;
+		let ivaCents = null;
+		try {
+			amountCents = parseMoneyToCents(amount, { field: 'Ventas del periodo', min: 0 });
+			if (iva !== null && iva !== undefined && iva !== '') {
+				ivaCents = parseMoneyToCents(iva, { field: 'IVA', min: 0 });
+			}
+		} catch (error) {
+			return fail(400, { error: error.message });
+		}
+
+		if (!paymentMethod) {
+			return fail(400, { error: 'Selecciona un método de cobro.' });
+		}
+
+		await crearVenta(userId, {
+			amount: amountCents,
+			iva: ivaCents ?? amountCents * 0.16,
+			date,
+			paymentMethod
+		});
 		return { success: true };
 	},
 

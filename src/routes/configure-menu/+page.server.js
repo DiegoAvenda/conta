@@ -1,6 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { ObjectId } from 'mongodb';
 import { getDb } from '$lib/server/db';
+import { parseMoneyToCents } from '$lib/server/money.js';
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 
 import {
@@ -46,19 +47,25 @@ export async function load({ locals }) {
 }
 
 export const actions = {
-	create: async ({ request, params, locals }) => {
+	create: async ({ request, locals }) => {
 		const userId = locals.user.id;
 		const form = await request.formData();
 
 		const name = form.get('name')?.toString().trim();
 		const description = form.get('description')?.toString().trim() ?? '';
 		const category = form.get('category')?.toString().trim();
-		const price = Number(form.get('price'));
 		const imageFile = form.get('image');
 
-		if (!name || !category || Number.isNaN(price)) {
+		let priceCents;
+		try {
+			priceCents = parseMoneyToCents(form.get('price'), { field: 'Precio', min: 0 });
+		} catch (error) {
+			return fail(400, { error: error.message });
+		}
+
+		if (!name || !category) {
 			return fail(400, {
-				error: 'Nombre, categoría y precio son requeridos.'
+				error: 'Nombre y categoría son requeridos.'
 			});
 		}
 
@@ -115,7 +122,7 @@ export const actions = {
 			name,
 			description,
 			category,
-			price,
+			price: priceCents,
 			imageKey,
 			createdAt: new Date()
 		});

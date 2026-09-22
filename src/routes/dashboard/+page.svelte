@@ -45,13 +45,13 @@
 </script>
 
 <svelte:head>
-	<title>Fondi · Dashboard</title>
+	<title>Contaco · Dashboard</title>
 </svelte:head>
 
 <div class="app">
 	<header class="topbar">
 		<div>
-			<div class="brand">Fondi</div>
+			<div class="brand">Contaco</div>
 			<div class="subtitle">Tu situación fiscal, sin hablar en idioma SAT.</div>
 		</div>
 
@@ -101,7 +101,7 @@
 
 				<div class="tax-breakdown">
 					<div class="tax-row">
-						<span>IVA trasladado (ventas directas)</span>
+						<span>IVA trasladado</span>
 						<strong>{formatMoney(data.resumen.iva.trasladado)}</strong>
 					</div>
 
@@ -109,20 +109,15 @@
 						<span>IVA acreditable (gastos)</span>
 						<strong>-{formatMoney(data.resumen.iva.acreditable)}</strong>
 					</div>
-
-					<div class="tax-row deduction">
-						<span>IVA ya retenido por plataformas</span>
-						<strong>-{formatMoney(data.resumen.iva.retenidoPlataformas)}</strong>
-					</div>
 				</div>
 
 				<div class="result-warning">
 					<span>ⓘ</span>
 					<div>
-						<strong>El ISR todavía no se calcula, solo se muestra lo retenido.</strong>
+						<strong>El ISR todavía no se calcula en este MVP.</strong>
 						<p>
-							Las plataformas ya te retuvieron {formatMoney(data.resumen.isrRetenidoPlataformas)} de ISR
-							este mes, pero el ISR total que debes (con base en tu régimen) no está calculado todavía.
+							Antes de mostrar una cifra de ISR, Contaco debe confirmar tu régimen y validar las
+							reglas fiscales aplicables a tu negocio.
 						</p>
 					</div>
 				</div>
@@ -153,7 +148,7 @@
 					</div>
 
 					<div>
-						<span>Gastos + comisiones</span>
+						<span>Gastos</span>
 						<strong>-{formatMoney(data.resumen.gastos.total)}</strong>
 					</div>
 				</div>
@@ -175,7 +170,7 @@
 				<div class="metric-icon expenses">↘</div>
 
 				<div>
-					<span>Gastos + comisiones</span>
+					<span>Gastos</span>
 					<strong>{formatMoney(data.resumen.gastos.total)}</strong>
 					<small>{data.resumen.gastos.registros} facturas</small>
 				</div>
@@ -197,7 +192,7 @@
 				<div class="panel-header">
 					<div>
 						<h2>Estado de tu información</h2>
-						<p>Lo que Fondi ha recibido este mes.</p>
+						<p>Lo que Contaco ha recibido este mes.</p>
 					</div>
 				</div>
 
@@ -218,7 +213,7 @@
 					<div class="check-item">
 						<div class="check-content">
 							<strong>Facturas de gastos</strong>
-							<span>{data.resumen.gastos.registros} CFDI; comisiones incluidas en gastos</span>
+							<span>{data.resumen.gastos.registros} CFDI registrados</span>
 						</div>
 
 						<span class="complete-label">Listo</span>
@@ -229,28 +224,28 @@
 			<div class="panel">
 				<div class="panel-header">
 					<div>
-						<h2>¿De dónde viene tu dinero?</h2>
-						<p>Ventas manuales y reportes de plataformas.</p>
+						<h2>¿Cómo cobraron tus ventas?</h2>
+						<p>Desglose de tus ventas directas por método de cobro.</p>
 					</div>
 				</div>
 
 				<div class="channels">
-					{#each data.resumen.canales as canal (canal.canal)}
+					{#each data.resumen.metodosPago as metodo (metodo.metodoPago)}
 						<div class="channel">
 							<div class="channel-info">
-								<strong>{canal.canal}</strong>
-								<span>{formatMoney(canal.total)}</span>
+								<strong>{metodo.metodoPago}</strong>
+								<span>{formatMoney(metodo.total)}</span>
 							</div>
 
 							<div class="channel-bar">
 								<div
-									style={`width: ${data.resumen.ventas.total > 0 ? (canal.total / data.resumen.ventas.total) * 100 : 0}%`}
+									style={`width: ${data.resumen.ventas.total > 0 ? (metodo.total / data.resumen.ventas.total) * 100 : 0}%`}
 								></div>
 							</div>
 
 							<small>
 								{data.resumen.ventas.total > 0
-									? Math.round((canal.total / data.resumen.ventas.total) * 100)
+									? Math.round((metodo.total / data.resumen.ventas.total) * 100)
 									: 0}%
 							</small>
 						</div>

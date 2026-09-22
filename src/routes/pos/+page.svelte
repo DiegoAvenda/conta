@@ -1,6 +1,7 @@
 <script>
-	import { products } from '$lib/utils/products';
+	import { resolve } from '$app/paths';
 	import { cart, addToCart, substractFromCart } from '$lib/utils/cart.svelte.js';
+	let { data } = $props();
 
 	let totalPrice = $derived(cart.reduce((sum, item) => sum + item.price * item.quantity, 0));
 </script>
@@ -9,13 +10,21 @@
 	<div class="flex justify-center">
 		<h1 class="text-4xl font-bold">Menu</h1>
 	</div>
+
+	{#if data.items.length === 0}
+		<div class="rounded-2xl border border-dashed border-gray-300 bg-gray-50 py-12 text-center">
+			<p class="text-gray-500">No hay platillos en el menú todavía.</p>
+			<a href={resolve('/configure-menu')}>Añade items al menu</a>
+		</div>
+	{/if}
+
 	<div
 		class="m-9 flex flex-col items-center gap-2 md:grid md:grid-cols-2 lg:grid-cols-3 lg:justify-center"
 	>
-		{#each products as product, i (product.name)}
+		{#each data.items as product, i (product._id)}
 			<div class="card-bordered card-compact card w-96 border-base-content bg-base-100 shadow-xl">
 				<figure>
-					<img alt={product.name} src={product.image} />
+					<img alt={product.name} src={product.imageUrl} />
 				</figure>
 				<div class="card-body">
 					<h2 class="card-title">
@@ -64,7 +73,8 @@
 			<div class="card-actions">
 				<form method="POST">
 					<input name="cart" type="hidden" value={JSON.stringify(cart)} />
-					<input name="totalPrice" type="hidden" value={totalPrice} />
+					<input name="discount" type="hidden" value="0" />
+					<input name="taxRate" type="hidden" value="16" />
 					<label class="form-control w-full">
 						<span class="label-text mb-1 text-xs">Payment</span>
 						<select name="paymentMethod" class="select-bordered select w-full select-sm">

@@ -6,7 +6,8 @@ export async function load({ locals }) {
 	const perfil = await obtenerPerfilNegocio(userId);
 
 	return {
-		rfc: perfil?.rfc ?? ''
+		rfc: perfil?.rfc ?? '',
+		regimenFiscal: perfil?.regimenFiscal?.codigo ?? null
 	};
 }
 

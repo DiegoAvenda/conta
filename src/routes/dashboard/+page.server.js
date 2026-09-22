@@ -1,4 +1,4 @@
-import { resumenCombinado, ultimosMovimientos } from '$lib/server/reportes.js';
+import { resumenMensual, ultimosMovimientos } from '$lib/server/reportes.js';
 
 export async function load({ locals, url }) {
 	const userId = locals.user.id;
@@ -7,7 +7,7 @@ export async function load({ locals, url }) {
 	const mes = Number(url.searchParams.get('mes')) || ahora.getMonth() + 1;
 
 	const [resumen, movimientos] = await Promise.all([
-		resumenCombinado(userId, anio, mes),
+		resumenMensual(userId, anio, mes),
 		ultimosMovimientos(userId, anio, mes)
 	]);
 

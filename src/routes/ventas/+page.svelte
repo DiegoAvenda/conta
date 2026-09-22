@@ -4,13 +4,11 @@
 	let { data, form } = $props();
 
 	let activeView = $state('home');
-	let importStatus = $state(null);
-	let fileInput = $state();
 	let guardando = $state(false);
 
 	let newSale = $state({
 		date: new Date().toISOString().split('T')[0],
-		channel: 'Local',
+		paymentMethod: 'Efectivo',
 		amount: '',
 		iva: ''
 	});
@@ -24,43 +22,17 @@
 			currency: 'MXN'
 		}).format(value);
 	}
-
-	function openFilePicker() {
-		fileInput?.click();
-	}
-
-	// TODO: pendiente — leer el archivo (Uber Eats/Rappi/Excel/CSV) con IA para
-	// extraer las filas y darlas de alta en la colección ventas. Por ahora
-	// sigue siendo una simulación visual, no persiste nada.
-	function handleFile(event) {
-		const file = event.target.files[0];
-
-		if (!file) return;
-
-		importStatus = {
-			type: 'processing',
-			name: file.name
-		};
-
-		setTimeout(() => {
-			importStatus = {
-				type: 'success',
-				name: file.name,
-				rows: 48
-			};
-		}, 1200);
-	}
 </script>
 
 <svelte:head>
-	<title>Fondi - Mis ventas</title>
+	<title>Contaco - Ventas directas</title>
 </svelte:head>
 
 <div class="app">
 	<header>
 		<div class="brand">
-			<div class="logo">fondi</div>
-			<span>Mis ventas</span>
+			<div class="logo">Contaco</div>
+			<span>Ventas directas</span>
 		</div>
 
 		<div class="period">
@@ -72,7 +44,7 @@
 	<main>
 		{#if activeView === 'home'}
 			<section class="intro">
-				<div class="eyebrow">PASO 2</div>
+				<div class="eyebrow">VENTAS DIRECTAS</div>
 
 				<h1>
 					Ahora necesitamos<br />
@@ -80,34 +52,21 @@
 				</h1>
 
 				<p>
-					Tráelas como ya las llevas. Puedes subir un archivo o registrarlas directamente en Fondi.
+					Registra las ventas de tu local, WhatsApp o entrega propia. Este MVP no incluye ventas de
+					plataformas digitales.
 				</p>
 			</section>
 
 			<section class="options">
-				<button class="option featured" onclick={openFilePicker}>
-					<div class="option-icon">↑</div>
-
-					<div class="option-body">
-						<strong>Importar archivo</strong>
-
-						<span> Uber Eats, Rappi, Mercado Libre, Shopify, Excel o CSV. </span>
-
-						<small> Fondi analizará las columnas y organizará las ventas automáticamente. </small>
-					</div>
-
-					<div class="arrow">→</div>
-				</button>
-
-				<button class="option" onclick={() => (activeView = 'add')}>
+				<button class="option featured" onclick={() => (activeView = 'add')}>
 					<div class="option-icon">+</div>
 
 					<div class="option-body">
-						<strong>Registrar ventas</strong>
+						<strong>Registrar un corte de ventas</strong>
 
-						<span> Registra tus ventas directamente en Fondi. </span>
+						<span> Registra las ventas de un día, semana o periodo. </span>
 
-						<small> Puedes hacerlo diariamente, semanalmente o cuando quieras. </small>
+						<small> Distingue efectivo, terminal, transferencia u otro cobro directo. </small>
 					</div>
 
 					<div class="arrow">→</div>
@@ -126,47 +85,12 @@
 				</button>
 			</section>
 
-			{#if importStatus}
-				<section class="import-status">
-					{#if importStatus.type === 'processing'}
-						<div class="spinner"></div>
-
-						<div>
-							<strong>Analizando {importStatus.name}</strong>
-
-							<p>Fondi está identificando las columnas y organizando tus ventas...</p>
-						</div>
-					{:else}
-						<div class="success-icon">✓</div>
-
-						<div>
-							<strong>Archivo procesado</strong>
-
-							<p>
-								Encontramos {importStatus.rows} registros. Revisa cómo interpretamos la información antes
-								de incorporarla a tus ventas.
-							</p>
-						</div>
-
-						<button onclick={() => (activeView = 'sales')}> Revisar → </button>
-					{/if}
-				</section>
-			{/if}
-
-			<input
-				bind:this={fileInput}
-				type="file"
-				accept=".xlsx,.xls,.csv,.zip,.xml"
-				onchange={handleFile}
-				hidden
-			/>
-
 			<section class="tip">
 				<strong>💡 No necesitas cambiar tu forma de trabajar.</strong>
 
 				<p>
-					Si ya llevas tus ventas en Excel, continúa haciéndolo. Fondi se encarga de convertir esa
-					información en datos que pueda utilizar para tu cálculo fiscal.
+					Puedes registrar un resumen del periodo; más adelante añadiremos una importación real de
+					archivos para ventas directas.
 				</p>
 			</section>
 		{:else if activeView === 'add'}
@@ -194,7 +118,7 @@
 						if (!form?.error) {
 							newSale = {
 								date: new Date().toISOString().split('T')[0],
-								channel: 'Local',
+								paymentMethod: 'Efectivo',
 								amount: '',
 								iva: ''
 							};
@@ -210,16 +134,12 @@
 				</label>
 
 				<label>
-					<span>Canal de venta</span>
+					<span>Método de cobro</span>
 
-					<select name="channel" bind:value={newSale.channel}>
-						<option value="Local">Local</option>
-						<option value="Transferencia">Transferencia</option>
+					<select name="paymentMethod" bind:value={newSale.paymentMethod}>
 						<option value="Efectivo">Efectivo</option>
 						<option value="Terminal">Terminal</option>
-						<option value="Uber Eats">Uber Eats</option>
-						<option value="Rappi">Rappi</option>
-						<option value="Mercado Libre">Mercado Libre</option>
+						<option value="Transferencia">Transferencia</option>
 						<option value="Otro">Otro</option>
 					</select>
 				</label>
@@ -258,7 +178,7 @@
 						/>
 					</div>
 
-					<small> Si lo dejas en blanco, Fondi lo calcula automáticamente al 16%. </small>
+					<small> Si lo dejas en blanco, Contaco lo calcula automáticamente al 16%. </small>
 				</label>
 
 				{#if form?.error}
@@ -283,7 +203,7 @@
 
 				<h1>Mis ventas</h1>
 
-				<p>Esta es la información que Fondi utilizará para preparar tu cierre fiscal.</p>
+				<p>Esta es la información que Contaco utilizará para preparar tu cierre fiscal.</p>
 			</section>
 
 			<section class="stats">
@@ -313,7 +233,7 @@
 				<div class="table">
 					<div class="table-head table-row">
 						<span>Fecha</span>
-						<span>Canal</span>
+						<span>Método de cobro</span>
 						<span>Ventas</span>
 						<span>IVA</span>
 						<span></span>
@@ -326,7 +246,7 @@
 							</span>
 
 							<span>
-								{venta.canal}
+								{venta.metodoPago}
 							</span>
 
 							<strong>
@@ -350,7 +270,9 @@
 				<div>
 					<strong>¿Terminaste de registrar tus ventas?</strong>
 
-					<p>Fondi combinará estos datos con tus gastos, retenciones y demás información fiscal.</p>
+					<p>
+						Contaco combinará estas ventas directas con tus gastos para preparar tu cierre mensual.
+					</p>
 				</div>
 
 				<button> Continuar → </button>
@@ -534,66 +456,6 @@
 	.arrow {
 		font-size: 20px;
 		color: #888;
-	}
-
-	.import-status {
-		display: flex;
-		align-items: center;
-		gap: 16px;
-		margin-top: 20px;
-		padding: 18px;
-		background: white;
-		border: 1px solid #ddd;
-		border-radius: 14px;
-	}
-
-	.import-status > div:nth-child(2) {
-		flex: 1;
-	}
-
-	.import-status p {
-		margin: 5px 0 0;
-		color: #666;
-		font-size: 13px;
-		line-height: 1.5;
-	}
-
-	.import-status button {
-		border: 0;
-		background: #171717;
-		color: white;
-		padding: 10px 15px;
-		border-radius: 8px;
-		font-size: 13px;
-		font-weight: 700;
-	}
-
-	.spinner {
-		width: 25px;
-		height: 25px;
-		border: 3px solid #ddd;
-		border-top-color: #171717;
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	.success-icon {
-		width: 30px;
-		height: 30px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: #171717;
-		color: white;
-		border-radius: 50%;
-		font-size: 14px;
-		font-weight: 700;
 	}
 
 	.tip {

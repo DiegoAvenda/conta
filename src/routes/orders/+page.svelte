@@ -139,11 +139,7 @@
 
 					<!-- BOTONES DE ACCIÓN -->
 					<div class="mt-2 card-actions flex justify-end gap-2">
-						{#if order.channel === 'delivery'}
-							<a href={resolve(`/orders/${order._id}`)} class="btn btn-sm">See location</a>
-						{/if}
-
-						{#if order.paymentStatus !== 'paid'}
+						{#if order.paymentStatus !== 'paid' && order.paymentStatus !== 'refunded'}
 							<form method="post" action="?/markPaid" class="flex items-center gap-2">
 								<input type="hidden" name="orderId" value={order._id} />
 								<select name="paymentMethod" class="select-bordered select select-xs">
@@ -151,6 +147,20 @@
 									<option value="cash" selected={order.channel !== 'delivery'}>Cash</option>
 								</select>
 								<button class="btn btn-sm btn-success">Mark Paid</button>
+							</form>
+						{/if}
+
+						{#if order.paymentStatus === 'paid'}
+							<form method="post" action="?/refundOrder">
+								<input type="hidden" name="orderId" value={order._id} />
+								<button class="btn btn-sm btn-warning">Refund</button>
+							</form>
+						{/if}
+
+						{#if order.status !== 'completed' && order.paymentStatus !== 'cancelled'}
+							<form method="post" action="?/cancelOrder">
+								<input type="hidden" name="orderId" value={order._id} />
+								<button class="btn btn-error btn-sm">Cancel</button>
 							</form>
 						{/if}
 

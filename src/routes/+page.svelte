@@ -12,7 +12,7 @@
 			id: 'omnichannel-orders',
 			title: 'Pedidos directos, sin comisiones',
 			description:
-				'Recibe pedidos para llevar y delivery en el mismo sistema, sin depender de plataformas que se quedan con una parte de cada venta.'
+				'Recibe pedidos para llevar y delivery propio en el mismo sistema, junto con las ventas de tu local.'
 		},
 		{
 			id: 'sat-automation',
@@ -40,7 +40,7 @@
 			price: '599.00',
 			billing: 'MXN / mes',
 			isPopular: false,
-			targetRoute: '/register?plan=monthly',
+			targetRoute: '/better-auth',
 			lineItems: [
 				'Punto de venta ilimitado',
 				'Pedidos online',
@@ -56,7 +56,7 @@
 			price: '479.00',
 			billing: 'MXN / mes, cobrado anualmente',
 			isPopular: true,
-			targetRoute: '/register?plan=yearly',
+			targetRoute: '/better-auth',
 			lineItems: [
 				'Todo lo del plan Mensual',
 				'2 meses gratis al año',
@@ -87,10 +87,10 @@
 				</a>
 
 				<a
-					href={resolve('/demo')}
+					href={resolve('/better-auth')}
 					class="rounded-md border border-(--contaco-tiza)/15 px-4 py-2 text-sm font-medium text-(--contaco-muted) transition hover:border-(--contaco-tiza)/30 hover:text-(--contaco-tiza)"
 				>
-					Ver demo
+					Iniciar sesión
 				</a>
 			</nav>
 
@@ -113,16 +113,16 @@
 
 					<div class="mt-9 flex flex-col gap-3 sm:flex-row">
 						<a
-							href={resolve('/register')}
+							href={resolve('/better-auth')}
 							class="rounded-md bg-(--contaco-marigold) px-7 py-3.5 text-center text-sm font-semibold text-(--contaco-pizarra) transition hover:bg-(--contaco-marigold-light)"
 						>
-							Prueba gratis 14 días
+							Entrar a la app
 						</a>
 						<a
-							href={resolve('/demo')}
+							href={resolve('/inscripcion')}
 							class="rounded-md border border-(--contaco-tiza)/15 px-7 py-3.5 text-center text-sm font-semibold text-(--contaco-tiza) transition hover:border-(--contaco-tiza)/30"
 						>
-							Explorar demo
+							Guía SAT
 						</a>
 					</div>
 
@@ -214,10 +214,10 @@
 				mismo lugar.
 			</p>
 			<a
-				href={resolve('/register')}
+				href={resolve('/better-auth')}
 				class="mt-9 inline-flex rounded-md bg-(--contaco-marigold) px-7 py-3.5 text-sm font-semibold text-(--contaco-pizarra) transition hover:bg-(--contaco-marigold-light)"
 			>
-				Empezar gratis
+				Entrar a la app
 			</a>
 		</div>
 
