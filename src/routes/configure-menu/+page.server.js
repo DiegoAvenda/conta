@@ -1,4 +1,4 @@
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { ObjectId } from 'mongodb';
 import { getDb } from '$lib/server/db';
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
@@ -23,12 +23,16 @@ const s3Client = new S3Client({
 const MAX_TITLE = 24;
 const MAX_DESC = 72;
 
-export async function load({ params }) {
+export async function load({ locals }) {
+	if (!locals.user) {
+		return redirect(302, 'better-auth/login');
+	}
+
 	const db = await getDb();
 
 	const items = await db
 		.collection('menuItems')
-		.find({ businessId: params.businessId })
+		.find({ userId: locals.user.id })
 		.sort({ category: 1, createdAt: 1 })
 		.toArray();
 
@@ -42,7 +46,8 @@ export async function load({ params }) {
 }
 
 export const actions = {
-	create: async ({ request, params }) => {
+	create: async ({ request, params, locals }) => {
+		const userId = locals.user.id;
 		const form = await request.formData();
 
 		const name = form.get('name')?.toString().trim();
@@ -78,7 +83,7 @@ export const actions = {
 				});
 			}
 
-			const fileName = `menu/${params.businessId}/${crypto.randomUUID()}-${imageFile.name.replace(/\s+/g, '-')}`;
+			const fileName = `menu/${userId}/${crypto.randomUUID()}-${imageFile.name.replace(/\s+/g, '-')}`;
 
 			const arrayBuffer = await imageFile.arrayBuffer();
 			const buffer = Buffer.from(arrayBuffer);
@@ -106,7 +111,7 @@ export const actions = {
 		const db = await getDb();
 
 		await db.collection('menuItems').insertOne({
-			businessId: params.businessId,
+			userId,
 			name,
 			description,
 			category,

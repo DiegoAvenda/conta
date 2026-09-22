@@ -22,5 +22,6 @@
 		<a href={resolve('/dashboard')} class="link link-hover">Dashboard</a>
 		<a href={resolve('/orders')} class="link link-hover">Orders</a>
 		<a href={resolve('/pos')} class="link link-hover">POS</a>
+		<a href={resolve('/configure-menu')} class="link link-hover">Menu</a>
 	</nav>
 </footer>
