@@ -177,7 +177,9 @@
 							>
 								{item.category}
 							</span>
-							<span class="text-lg font-bold text-emerald-600">${item.price}</span>
+							<span class="text-lg font-bold text-emerald-600"
+								>${((Number(item.price) || 0) / 100).toFixed(2)}</span
+							>
 						</div>
 						<h3 class="truncate text-xl font-bold text-gray-900">{item.name}</h3>
 						{#if item.description}

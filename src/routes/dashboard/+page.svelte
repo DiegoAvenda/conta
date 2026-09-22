@@ -36,7 +36,7 @@
 			style: 'currency',
 			currency: 'MXN',
 			maximumFractionDigits: 0
-		}).format(value);
+		}).format((Number(value) || 0) / 100);
 	}
 
 	function getTransactionClass(tipo) {

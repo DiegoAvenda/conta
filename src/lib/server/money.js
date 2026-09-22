@@ -26,3 +26,19 @@ export function parseMoneyToCents(value, { field = 'monto', min = 0, max = null 
 export function centsToNumber(cents) {
 	return Number(cents) / 100;
 }
+
+export function pesosToCents(pesos) {
+	if (pesos === null || pesos === undefined || pesos === '') return 0;
+	const num = typeof pesos === 'number' ? pesos : Number(String(pesos).replace(/[$,\s]/g, ''));
+	if (!Number.isFinite(num)) return 0;
+	return Math.round(num * 100);
+}
+
+export function formatCents(cents, locale = 'es-MX') {
+	return new Intl.NumberFormat(locale, {
+		style: 'currency',
+		currency: 'MXN',
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 2
+	}).format(centsToNumber(cents ?? 0));
+}

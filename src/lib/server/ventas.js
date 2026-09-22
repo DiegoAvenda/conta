@@ -20,7 +20,8 @@ export async function crearVenta(userId, datos) {
 	const db = await getDb();
 
 	const monto = Number(datos.amount ?? 0);
-	const iva = Number(datos.iva ?? monto * 0.16);
+	const iva = Number(datos.iva ?? Math.round(monto * 0.16));
+	const total = monto + iva;
 
 	const venta = {
 		userId,
@@ -28,6 +29,7 @@ export async function crearVenta(userId, datos) {
 		metodoPago: datos.paymentMethod,
 		monto,
 		iva,
+		total,
 		creadoEn: new Date()
 	};
 
@@ -48,8 +50,15 @@ export async function crearVenta(userId, datos) {
 export async function registrarVentaDesdePedido(userId, pedido) {
 	const db = await getDb();
 	const orderId = pedido?._id?.toString?.() ?? pedido?.orderId ?? null;
-	const monto = Number(pedido?.totalPrice ?? pedido?.subtotal ?? pedido?.monto ?? 0);
-	const iva = Number(pedido?.iva ?? monto * 0.16);
+	const subtotal = Number(
+		pedido?.subtotal !== undefined
+			? Math.max(pedido.subtotal - (pedido.discount ?? 0), 0)
+			: pedido?.totalPrice
+				? Math.round(pedido.totalPrice / 1.16)
+				: (pedido?.monto ?? 0)
+	);
+	const iva = Number(pedido?.iva ?? Math.round(subtotal * 0.16));
+	const total = Number(pedido?.totalPrice ?? subtotal + iva);
 	const fecha = pedido?.createdAt ?? pedido?.fecha ?? new Date();
 
 	if (!orderId) {
@@ -67,8 +76,9 @@ export async function registrarVentaDesdePedido(userId, pedido) {
 		orderId,
 		fecha: new Date(fecha),
 		metodoPago: pedido?.paymentMethod ?? 'cash',
-		monto,
+		monto: subtotal,
 		iva,
+		total,
 		creadoEn: new Date(),
 		tipo: 'POS',
 		source: 'order'
@@ -79,7 +89,7 @@ export async function registrarVentaDesdePedido(userId, pedido) {
 		userId,
 		orderId,
 		tipo: MOVIMIENTO_TIPOS.COBRO,
-		amount: monto,
+		amount: subtotal,
 		iva,
 		paymentMethod: venta.metodoPago,
 		metadata: { source: 'order-sale', saleId: resultado.insertedId.toString() },

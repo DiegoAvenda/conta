@@ -26,7 +26,7 @@ const MAX_DESC = 72;
 
 export async function load({ locals }) {
 	if (!locals.user) {
-		return redirect(302, 'better-auth/login');
+		return redirect(302, '/better-auth/login');
 	}
 
 	const db = await getDb();
@@ -132,7 +132,11 @@ export const actions = {
 		};
 	},
 
-	delete: async ({ request }) => {
+	delete: async ({ request, locals }) => {
+		if (!locals.user) {
+			return fail(401, { error: 'No autorizado.' });
+		}
+
 		const form = await request.formData();
 		const id = form.get('id')?.toString();
 
@@ -145,12 +149,13 @@ export const actions = {
 		const db = await getDb();
 
 		const item = await db.collection('menuItems').findOne({
-			_id: new ObjectId(id)
+			_id: new ObjectId(id),
+			userId: locals.user.id
 		});
 
 		if (!item) {
 			return fail(404, {
-				error: 'El producto no existe.'
+				error: 'El producto no existe o no tienes permisos para eliminarlo.'
 			});
 		}
 
@@ -168,7 +173,8 @@ export const actions = {
 		}
 
 		await db.collection('menuItems').deleteOne({
-			_id: new ObjectId(id)
+			_id: new ObjectId(id),
+			userId: locals.user.id
 		});
 
 		return {

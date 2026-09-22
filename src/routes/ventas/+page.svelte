@@ -19,8 +19,10 @@
 	function formatMoney(value) {
 		return new Intl.NumberFormat('es-MX', {
 			style: 'currency',
-			currency: 'MXN'
-		}).format(value);
+			currency: 'MXN',
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
+		}).format((Number(value) || 0) / 100);
 	}
 </script>
 

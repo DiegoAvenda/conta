@@ -1,6 +1,39 @@
 import { getDb } from './db.js';
 import { ObjectId } from 'mongodb';
 import { parsearCfdi } from './cfdi.js';
+import { parseMoneyToCents } from './money.js';
+
+export async function crearGastoManual(userId, datos) {
+	const db = await getDb();
+	const totalCents = parseMoneyToCents(datos.total, { field: 'Monto del gasto', min: 0.01 });
+	const concepto = String(datos.concepto ?? '').trim();
+	if (!concepto) {
+		throw new Error('El concepto o descripción del gasto es obligatorio.');
+	}
+
+	const categoria = String(datos.categoria ?? 'Insumos').trim();
+	const proveedor = String(datos.proveedor ?? 'Compra local / Efectivo').trim();
+	const metodoPago = String(datos.metodoPago ?? 'cash').trim();
+	const fecha = datos.fecha ? new Date(datos.fecha + 'T12:00:00') : new Date();
+
+	const gasto = {
+		userId,
+		tipo: 'gasto_manual',
+		tieneCfdi: false,
+		fecha,
+		subtotal: totalCents,
+		total: totalCents,
+		iva: 0, // No es acreditable para el SAT al no tener CFDI
+		categoria,
+		nombreEmisor: proveedor,
+		conceptos: [concepto],
+		metodoPago,
+		creadoEn: new Date()
+	};
+
+	const resultado = await db.collection('facturas').insertOne(gasto);
+	return resultado.insertedId;
+}
 
 export async function crearFacturaDesdeXml(userId, rfcNegocio, xmlTexto) {
 	const db = await getDb();
@@ -17,6 +50,8 @@ export async function crearFacturaDesdeXml(userId, rfcNegocio, xmlTexto) {
 	const factura = {
 		userId,
 		tipo: 'gasto',
+		tieneCfdi: true,
+		categoria: 'Factura CFDI',
 		uuid: datos.uuid,
 		fecha: new Date(datos.fecha),
 		subtotal: datos.subtotal,
@@ -49,7 +84,9 @@ export async function listarFacturas(userId) {
 	return facturas.map((f) => ({
 		...f,
 		_id: f._id.toString(),
-		fecha: f.fecha.toISOString().slice(0, 10),
+		fecha: f.fecha ? f.fecha.toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
+		tieneCfdi: f.tieneCfdi !== false && f.tipo !== 'gasto_manual',
+		categoria: f.categoria ?? (f.tipo === 'gasto_manual' ? 'Insumos' : 'Factura CFDI'),
 		xmlOriginal: undefined // no hace falta mandar el XML completo de vuelta al listado
 	}));
 }
@@ -66,6 +103,6 @@ export async function eliminarFactura(userId, facturaId) {
 // rechace por sí mismo un uuid repetido, en vez de depender solo del try/catch de arriba
 export async function crearIndices() {
 	const db = await getDb();
-	await db.collection('facturas').createIndex({ uuid: 1 }, { unique: true });
+	await db.collection('facturas').createIndex({ uuid: 1 }, { unique: true, sparse: true });
 	await db.collection('facturas').createIndex({ userId: 1, fecha: -1 });
 }

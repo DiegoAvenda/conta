@@ -6,7 +6,7 @@ import { R2_PUBLIC_URL } from '$env/static/private';
 
 export async function load({ locals }) {
 	if (!locals.user) {
-		return redirect(302, 'better-auth/login');
+		return redirect(302, '/better-auth/login');
 	}
 
 	const db = await getDb();

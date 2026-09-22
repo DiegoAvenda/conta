@@ -39,6 +39,13 @@
 		if (channelVal && channelVal !== 'all') params.set('channel', channelVal);
 		return params.toString();
 	};
+
+	const formatMoney = (cents) =>
+		new Intl.NumberFormat('es-MX', {
+			style: 'currency',
+			currency: 'MXN',
+			minimumFractionDigits: 2
+		}).format((cents ?? 0) / 100);
 </script>
 
 <div class="mt-6 flex flex-col items-center">
@@ -129,7 +136,9 @@
 
 					<!-- TOTAL Y PAGO -->
 					<div class="mt-2 flex items-center justify-between">
-						<p class="font-bold">Total price ${order.totalPrice}</p>
+						<p class="text-sm font-bold">
+							Total: <span class="font-black text-primary">{formatMoney(order.totalPrice)}</span>
+						</p>
 						{#if order.paymentStatus === 'paid'}
 							<span class="badge text-white badge-success">Paid</span>
 						{:else}

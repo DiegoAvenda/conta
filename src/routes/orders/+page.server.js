@@ -15,7 +15,7 @@ const formatTime = (value) => {
 
 export const load = async ({ url, locals }) => {
 	if (!locals.user) {
-		return redirect(302, 'better-auth/login');
+		return redirect(302, '/better-auth/login');
 	}
 
 	const status = url.searchParams.get('status') ?? 'pending';

@@ -1,4 +1,5 @@
 import { XMLParser } from 'fast-xml-parser';
+import { pesosToCents } from './money.js';
 
 const parser = new XMLParser({
 	ignoreAttributes: false,
@@ -33,9 +34,9 @@ export function parsearCfdi(xmlTexto) {
 	return {
 		uuid,
 		fecha: comprobante.Fecha,
-		subtotal: Number(comprobante.SubTotal),
-		total: Number(comprobante.Total),
-		iva: ivaTotal,
+		subtotal: pesosToCents(comprobante.SubTotal),
+		total: pesosToCents(comprobante.Total),
+		iva: pesosToCents(ivaTotal),
 		rfcEmisor: emisor.Rfc,
 		nombreEmisor: emisor.Nombre,
 		rfcReceptor: receptor.Rfc,
