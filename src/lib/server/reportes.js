@@ -1,9 +1,10 @@
 import { getDb } from './db.js';
+import { buildLedgerEntries, buildMonthlyFiscalSummary } from './fiscal.js';
 import { crearFiltroVentasDirectas } from './ventas.js';
 
-// Resume las ventas directas y los CFDI de gastos de un periodo. El MVP no
-// incorpora ventas ni retenciones de plataformas; esa integración queda aislada
-// hasta que se habilite nuevamente su flujo de importación.
+// Resume las ventas directas, los CFDI de gastos y los movimientos del ledger
+// del periodo para alimentar el dashboard y la vista SAT mensual con una única
+// fuente de verdad financiera.
 export async function resumenMensual(userId, anio, mes) {
 	const db = await getDb();
 
@@ -11,37 +12,16 @@ export async function resumenMensual(userId, anio, mes) {
 	const fin = new Date(anio, mes, 1);
 	const ventasFiltro = crearFiltroVentasDirectas(userId, { fecha: { $gte: inicio, $lt: fin } });
 
-	const [facturasAgg, ventasAgg, metodosPagoAgg] = await Promise.all([
+	const [facturas, ventas, movimientos, metodosPagoAgg] = await Promise.all([
 		db
 			.collection('facturas')
-			.aggregate([
-				{ $match: { userId, fecha: { $gte: inicio, $lt: fin } } },
-				{
-					$group: {
-						_id: null,
-						total: { $sum: '$total' },
-						iva: { $sum: '$iva' },
-						cantidad: { $sum: 1 }
-					}
-				}
-			])
+			.find({ userId, fecha: { $gte: inicio, $lt: fin } })
 			.toArray(),
-
+		db.collection('ventas').find(ventasFiltro).toArray(),
 		db
-			.collection('ventas')
-			.aggregate([
-				{ $match: ventasFiltro },
-				{
-					$group: {
-						_id: null,
-						total: { $sum: '$monto' },
-						iva: { $sum: '$iva' },
-						cantidad: { $sum: 1 }
-					}
-				}
-			])
+			.collection('movimientos')
+			.find({ userId, createdAt: { $gte: inicio, $lt: fin } })
 			.toArray(),
-
 		db
 			.collection('ventas')
 			.aggregate([
@@ -52,32 +32,30 @@ export async function resumenMensual(userId, anio, mes) {
 			.toArray()
 	]);
 
-	const facturas = facturasAgg[0] || { total: 0, iva: 0, cantidad: 0 };
-	const ventas = ventasAgg[0] || { total: 0, iva: 0, cantidad: 0 };
-	const ventasTotales = ventas.total;
-	const gastosTotales = facturas.total;
-	const ivaTrasladado = ventas.iva;
-	const ivaAcreditable = facturas.iva;
+	const summary = buildMonthlyFiscalSummary({ ventas, facturas, movimientos });
 
 	return {
 		ventas: {
-			total: ventasTotales,
-			registros: ventas.cantidad
+			total: summary.ventas.total,
+			registros: summary.ventas.registros,
+			netas: summary.ventas.netas
 		},
 		gastos: {
-			total: gastosTotales,
-			registros: facturas.cantidad
+			total: summary.gastos.total,
+			registros: summary.gastos.registros
 		},
 		iva: {
-			trasladado: ivaTrasladado,
-			acreditable: ivaAcreditable,
-			estimado: Math.max(ivaTrasladado - ivaAcreditable, 0)
+			trasladado: summary.iva.trasladado,
+			acreditable: summary.iva.acreditable,
+			estimado: summary.iva.estimado
 		},
-		utilidad: ventasTotales - gastosTotales,
+		utilidad: summary.utilidad,
 		metodosPago: metodosPagoAgg.map((metodo) => ({
 			metodoPago: metodo._id ?? 'Sin especificar',
 			total: metodo.total
-		}))
+		})),
+		sat: summary.sat,
+		ledger: summary.movimientos
 	};
 }
 
@@ -86,31 +64,30 @@ export async function ultimosMovimientos(userId, anio, mes, limite = 8) {
 
 	const inicio = new Date(anio, mes - 1, 1);
 	const fin = new Date(anio, mes, 1);
-	const filtro = { userId, fecha: { $gte: inicio, $lt: fin } };
 	const ventasFiltro = crearFiltroVentasDirectas(userId, { fecha: { $gte: inicio, $lt: fin } });
 
-	const [facturas, ventas] = await Promise.all([
-		db.collection('facturas').find(filtro).sort({ fecha: -1 }).limit(limite).toArray(),
-		db.collection('ventas').find(ventasFiltro).sort({ fecha: -1 }).limit(limite).toArray()
+	const [facturas, ventas, movimientos] = await Promise.all([
+		db
+			.collection('facturas')
+			.find({ userId, fecha: { $gte: inicio, $lt: fin } })
+			.sort({ fecha: -1 })
+			.limit(limite)
+			.toArray(),
+		db.collection('ventas').find(ventasFiltro).sort({ fecha: -1 }).limit(limite).toArray(),
+		db
+			.collection('movimientos')
+			.find({ userId, createdAt: { $gte: inicio, $lt: fin } })
+			.sort({ createdAt: -1 })
+			.limit(limite)
+			.toArray()
 	]);
 
-	const movimientos = [
-		...facturas.map((f) => ({
-			fecha: f.fecha,
-			descripcion: f.nombreEmisor,
-			tipo: 'Gasto',
-			monto: -f.total
-		})),
-		...ventas.map((v) => ({
-			fecha: v.fecha,
-			descripcion: `Venta ${v.metodoPago ?? v.canal ?? 'directa'}`,
-			tipo: 'Venta',
-			monto: v.monto
-		}))
-	];
+	const ledger = buildLedgerEntries({ ventas, facturas, movimientos });
 
-	return movimientos
-		.sort((a, b) => b.fecha - a.fecha)
-		.slice(0, limite)
-		.map((m) => ({ ...m, fecha: m.fecha.toISOString().slice(0, 10) }));
+	return ledger.slice(0, limite).map((m) => ({
+		fecha: new Date(m.fecha).toISOString().slice(0, 10),
+		descripcion: m.descripcion,
+		tipo: m.tipo,
+		monto: m.monto
+	}));
 }

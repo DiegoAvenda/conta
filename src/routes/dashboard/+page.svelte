@@ -76,9 +76,14 @@
 				</p>
 			</div>
 
-			<div class="status">
-				<span class="status-dot"></span>
-				Información actualizada
+			<div class="status-actions">
+				<div class="status">
+					<span class="status-dot"></span>
+					Información actualizada
+				</div>
+				<a class="sat-link" href={resolve(`/sat-monthly?anio=${data.anio}&mes=${data.mes}`)}>
+					Ver resumen SAT
+				</a>
 			</div>
 		</section>
 
@@ -403,6 +408,13 @@
 		font-size: 14px;
 	}
 
+	.status-actions {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		flex-wrap: wrap;
+	}
+
 	.status {
 		background: #eef8f0;
 		color: #28743b;
@@ -412,6 +424,19 @@
 		display: flex;
 		align-items: center;
 		gap: 7px;
+	}
+
+	.sat-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 9px 14px;
+		background: #0f172a;
+		color: white;
+		border-radius: 999px;
+		text-decoration: none;
+		font-size: 12px;
+		font-weight: 700;
 	}
 
 	.status-dot {
