@@ -1,5 +1,6 @@
 import { getDb } from '$lib/server/db.js';
 import { buildMonthlyFiscalSummary } from '$lib/server/fiscal.js';
+import { crearFiltroVentasDirectas } from '$lib/server/ventas.js';
 
 export async function load({ locals, url }) {
 	if (!locals.user) {
@@ -12,11 +13,12 @@ export async function load({ locals, url }) {
 	const fin = new Date(anio, mes, 1);
 	const db = await getDb();
 
+	const ventasFiltro = crearFiltroVentasDirectas(locals.user.id, {
+		fecha: { $gte: inicio, $lt: fin }
+	});
+
 	const [ventas, facturas, movimientos] = await Promise.all([
-		db
-			.collection('ventas')
-			.find({ userId: locals.user.id, fecha: { $gte: inicio, $lt: fin } })
-			.toArray(),
+		db.collection('ventas').find(ventasFiltro).toArray(),
 		db
 			.collection('facturas')
 			.find({ userId: locals.user.id, fecha: { $gte: inicio, $lt: fin } })

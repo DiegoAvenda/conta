@@ -40,9 +40,15 @@ export const actions = {
 		const customerPhone = data.get('customerPhone')?.toString().trim() ?? null;
 		const rawDiscount = data.get('discount') ?? '0';
 		const rawTaxRate = data.get('taxRate') ?? '16';
+		// 'dine-in' = comensal en mesa; 'takeout' = comensal que llega y pide para llevar
+		const rawOrderType = data.get('orderType')?.toString() ?? 'dine-in';
 
 		if (!['cash', 'card'].includes(paymentMethod)) {
 			return fail(400, { error: 'Método de pago inválido.' });
+		}
+
+		if (!['dine-in', 'takeout'].includes(rawOrderType)) {
+			return fail(400, { error: 'Tipo de pedido inválido.' });
 		}
 
 		let discountCents;
@@ -133,7 +139,7 @@ export const actions = {
 				totalPrice,
 				status: 'pending',
 				channel: 'restaurant',
-				orderType: 'dine-in',
+				orderType: rawOrderType,
 				paymentStatus: paymentMethod === 'card' ? 'paid' : 'unpaid',
 				paymentMethod,
 				customerName,

@@ -4,6 +4,12 @@ import { registrarVentaDesdePedido } from '$lib/server/ventas.js';
 import { registrarMovimiento, MOVIMIENTO_TIPOS } from '$lib/server/movimientos.js';
 import { ObjectId } from 'mongodb';
 
+// TODO (MVP): devoluciones/cancelaciones quedan fuera del alcance por ahora —
+// se asume que no hay devoluciones. Para el MVP el monto de un reembolso debe
+// descontar la base SIN IVA (no el total cobrado), para no subestimar el ingreso.
+const baseSinIva = (order) =>
+	Math.max(Number(order?.subtotal ?? order?.totalPrice ?? 0) - Number(order?.discount ?? 0), 0);
+
 const formatTime = (value) => {
 	if (!value) return null;
 	return new Date(value).toLocaleTimeString('en-US', {
@@ -204,7 +210,7 @@ export const actions = {
 			userId: locals.user.id,
 			orderId,
 			tipo: MOVIMIENTO_TIPOS.DEVOLUCION,
-			amount: Number(existingOrder.totalPrice ?? existingOrder.subtotal ?? 0),
+			amount: baseSinIva(existingOrder),
 			iva: Number(existingOrder.iva ?? 0),
 			paymentMethod: existingOrder.paymentMethod ?? 'cash',
 			metadata: { source: 'refundOrder', reason: 'manual-refund' },
@@ -243,7 +249,7 @@ export const actions = {
 			userId: locals.user.id,
 			orderId,
 			tipo: MOVIMIENTO_TIPOS.CANCELACION,
-			amount: Number(existingOrder.totalPrice ?? existingOrder.subtotal ?? 0),
+			amount: baseSinIva(existingOrder),
 			iva: Number(existingOrder.iva ?? 0),
 			paymentMethod: existingOrder.paymentMethod ?? 'cash',
 			metadata: { source: 'cancelOrder', reason: 'manual-cancel' },

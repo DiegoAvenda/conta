@@ -17,6 +17,12 @@ export function obtenerTasaResicoMensual(ingresosCents) {
 	return TABLA_RESICO_MENSUAL[TABLA_RESICO_MENSUAL.length - 1];
 }
 
+// Un gasto es acreditable de IVA solo si es un CFDI válido (no un gasto manual
+// en efectivo/mercado). Espeja la regla que usa el listado de egresos.
+export function esGastoConCfdi(factura) {
+	return factura?.tieneCfdi !== false && factura?.tipo !== 'gasto_manual';
+}
+
 export function buildLedgerEntries({ ventas = [], facturas = [], movimientos = [] } = {}) {
 	const entries = [];
 
@@ -63,8 +69,17 @@ export function buildMonthlyFiscalSummary({ ventas = [], facturas = [], movimien
 	const ventasTotal = ventas.reduce((sum, venta) => sum + Number(venta.monto ?? 0), 0);
 	const gastosTotal = facturas.reduce((sum, factura) => sum + Number(factura.total ?? 0), 0);
 
+	const gastosConFactura = facturas
+		.filter(esGastoConCfdi)
+		.reduce((sum, factura) => sum + Number(factura.total ?? 0), 0);
+	const gastosSinFactura = gastosTotal - gastosConFactura;
+
 	const ivaTrasladado = ventas.reduce((sum, venta) => sum + Number(venta.iva ?? 0), 0);
-	const ivaAcreditable = 0;
+	// Solo el IVA de un CFDI es acreditable ante el SAT; el gasto en efectivo sin
+	// factura es costo real del negocio, pero no genera crédito fiscal.
+	const ivaAcreditable = facturas
+		.filter(esGastoConCfdi)
+		.reduce((sum, factura) => sum + Number(factura.iva ?? 0), 0);
 	const devolucionesTotal = movimientos
 		.filter((m) => String(m.tipo).toLowerCase() === 'devolucion')
 		.reduce((sum, m) => sum + Number(m.monto ?? 0), 0);
@@ -96,7 +111,9 @@ export function buildMonthlyFiscalSummary({ ventas = [], facturas = [], movimien
 		},
 		gastos: {
 			total: gastosTotal,
-			registros: facturas.length
+			registros: facturas.length,
+			conFactura: gastosConFactura,
+			sinFactura: gastosSinFactura
 		},
 		iva: {
 			trasladado: ivaTrasladado,

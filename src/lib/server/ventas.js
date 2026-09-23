@@ -2,17 +2,13 @@ import { getDb } from './db.js';
 import { ObjectId } from 'mongodb';
 import { registrarMovimiento, MOVIMIENTO_TIPOS } from './movimientos.js';
 
-const CANALES_DIRECTOS_LEGADOS = ['Local', 'Transferencia', 'Efectivo', 'Terminal', 'Otro'];
-
-// Los registros nuevos usan metodoPago. Los registros antiguos conservan canal,
-// por lo que solo se incluyen los valores que correspondían a ventas directas.
-// Así, datos históricos de plataformas permanecen almacenados pero no contaminan
-// los cierres del negocio.
+// La app trabaja exclusivamente bajo RESICO con ventas propias (POS, local y
+// delivery propio). Toda venta registrada pertenece al negocio, así que el
+// filtro base es simplemente el usuario y, opcionalmente, un rango de fechas.
 export function crearFiltroVentasDirectas(userId, rangoFecha = {}) {
 	return {
 		userId,
-		...rangoFecha,
-		$or: [{ metodoPago: { $exists: true } }, { canal: { $in: CANALES_DIRECTOS_LEGADOS } }]
+		...rangoFecha
 	};
 }
 
@@ -25,7 +21,9 @@ export async function crearVenta(userId, datos) {
 
 	const venta = {
 		userId,
-		fecha: new Date(datos.date),
+		// Se ancla a mediodía local (igual que los gastos) para que 'YYYY-MM-DD' no
+		// se interprete como medianoche UTC y se recorra al día/mes anterior.
+		fecha: datos.date ? new Date(`${datos.date}T12:00:00`) : new Date(),
 		metodoPago: datos.paymentMethod,
 		monto,
 		iva,
@@ -109,9 +107,7 @@ export async function listarVentas(userId) {
 	return ventas.map((v) => ({
 		...v,
 		_id: v._id.toString(),
-		// Conserva legibles los registros creados antes del cambio de "canal" a
-		// "método de cobro", sin volver a incluir canales de plataformas no directos.
-		metodoPago: v.metodoPago ?? v.canal ?? 'Sin especificar',
+		metodoPago: v.metodoPago ?? 'Sin especificar',
 		fecha: v.fecha.toISOString().slice(0, 10)
 	}));
 }
@@ -124,11 +120,7 @@ export async function eliminarVenta(userId, ventaId) {
 	});
 }
 
-// NOTA: a diferencia de gastos sin CFDI (que se excluyen del cálculo de impuestos
-// porque no son deducibles), estas ventas SÍ deben sumarse al ingreso total —
-// el SAT cobra sobre todo lo que vendes, tengas o no factura de por medio.
-// Falta decidir cómo se combina esto con resumenFiscal() de facturas.js
-// (dos colecciones distintas alimentando un mismo total de ingresos).
+// Resumen anual de ventas propias. Todo lo vendido suma al ingreso para RESICO.
 export async function resumenVentas(userId, anio) {
 	const db = await getDb();
 

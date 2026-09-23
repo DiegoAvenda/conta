@@ -26,7 +26,12 @@ export async function resumenMensual(userId, anio, mes) {
 			.collection('ventas')
 			.aggregate([
 				{ $match: ventasFiltro },
-				{ $group: { _id: { $ifNull: ['$metodoPago', '$canal'] }, total: { $sum: '$monto' } } },
+				{
+					$group: {
+						_id: { $ifNull: ['$metodoPago', 'Sin especificar'] },
+						total: { $sum: '$monto' }
+					}
+				},
 				{ $sort: { total: -1 } }
 			])
 			.toArray()

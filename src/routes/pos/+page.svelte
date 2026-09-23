@@ -13,6 +13,7 @@
 
 	let tableNumber = $state('');
 	let customerName = $state('');
+	let orderType = $state('dine-in'); // 'dine-in' = en mesa; 'takeout' = para llevar
 	let paymentMethod = $state('cash');
 	let procesando = $state(false);
 	let mensajeExito = $state('');
@@ -203,6 +204,7 @@
 									clearCart();
 									tableNumber = '';
 									customerName = '';
+									orderType = 'dine-in';
 									mensajeExito = '¡Orden registrada y enviada a cocina!';
 									setTimeout(() => (mensajeExito = ''), 4000);
 								}
@@ -213,6 +215,24 @@
 						<input name="cart" type="hidden" value={JSON.stringify(cart)} />
 						<input name="discount" type="hidden" value="0" />
 						<input name="taxRate" type="hidden" value="16" />
+
+						<div class="flex gap-2">
+							<button
+								type="button"
+								onclick={() => (orderType = 'dine-in')}
+								class="btn flex-1 btn-sm {orderType === 'dine-in' ? 'btn-primary' : 'btn-outline'}"
+							>
+								🍽️ En mesa
+							</button>
+							<button
+								type="button"
+								onclick={() => (orderType = 'takeout')}
+								class="btn flex-1 btn-sm {orderType === 'takeout' ? 'btn-primary' : 'btn-outline'}"
+							>
+								🥡 Para llevar
+							</button>
+						</div>
+						<input name="orderType" type="hidden" value={orderType} />
 
 						<div class="grid grid-cols-2 gap-3">
 							<label class="form-control">

@@ -1,6 +1,11 @@
 import { crearGastoManual, listarFacturas, eliminarFactura } from '$lib/server/facturas.js';
 import { fail } from '@sveltejs/kit';
 
+// TODO (MVP): la carga de CFDI (XML) para gastos deducibles quedó pendiente.
+// El parser y la función `crearFacturaDesdeXml` ya existen en `$lib/server/cfdi.js`
+// y `$lib/server/facturas.js`; falta exponer el action + formulario de subida.
+// Sin CFDI, todos los gastos son manuales (iva: 0) y el IVA acreditable es 0.
+
 export async function load({ locals }) {
 	const userId = locals.user.id;
 	const facturas = await listarFacturas(userId);
