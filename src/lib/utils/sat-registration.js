@@ -1,5 +1,4 @@
 // Guía deliberadamente general: los textos y pantallas del portal pueden cambiar.
-// El MVP solo contempla un restaurante con ventas directas.
 export const pasos = [
 	{
 		numero: 1,
@@ -28,7 +27,7 @@ export const pasos = [
 			'Busca la actividad económica que describa con mayor precisión tu restaurante, venta de alimentos preparados o comida para llevar.',
 		acciones: [
 			'Revisa la descripción de la actividad antes de confirmarla.',
-			'No agregues obligaciones de intermediación digital en este MVP si no vendes mediante plataformas.'
+			'No agregues obligaciones de intermediación digital si no vendes mediante plataformas.'
 		]
 	},
 	{

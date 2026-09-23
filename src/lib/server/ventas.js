@@ -7,7 +7,7 @@ const CANALES_DIRECTOS_LEGADOS = ['Local', 'Transferencia', 'Efectivo', 'Termina
 // Los registros nuevos usan metodoPago. Los registros antiguos conservan canal,
 // por lo que solo se incluyen los valores que correspondían a ventas directas.
 // Así, datos históricos de plataformas permanecen almacenados pero no contaminan
-// los cierres del MVP directo.
+// los cierres del negocio.
 export function crearFiltroVentasDirectas(userId, rangoFecha = {}) {
 	return {
 		userId,
@@ -110,7 +110,7 @@ export async function listarVentas(userId) {
 		...v,
 		_id: v._id.toString(),
 		// Conserva legibles los registros creados antes del cambio de "canal" a
-		// "método de cobro", sin volver a incluir canales de plataformas en el MVP.
+		// "método de cobro", sin volver a incluir canales de plataformas no directos.
 		metodoPago: v.metodoPago ?? v.canal ?? 'Sin especificar',
 		fecha: v.fecha.toISOString().slice(0, 10)
 	}));

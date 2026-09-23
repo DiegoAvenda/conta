@@ -50,12 +50,7 @@
 
 <div class="app">
 	<header class="topbar">
-		<div>
-			<div class="brand">Contaco</div>
-			<div class="subtitle">Tu situación fiscal, sin hablar en idioma SAT.</div>
-		</div>
-
-		<div class="month-selector">
+		<div class="month-selector" style="margin-left: auto;">
 			<span>Periodo</span>
 
 			<select value={`${data.anio}-${data.mes}`} onchange={cambiarPeriodo}>
@@ -113,17 +108,6 @@
 					<div class="tax-row deduction">
 						<span>IVA acreditable (gastos)</span>
 						<strong>-{formatMoney(data.resumen.iva.acreditable)}</strong>
-					</div>
-				</div>
-
-				<div class="result-warning">
-					<span>ⓘ</span>
-					<div>
-						<strong>El ISR todavía no se calcula en este MVP.</strong>
-						<p>
-							Antes de mostrar una cifra de ISR, Contaco debe confirmar tu régimen y validar las
-							reglas fiscales aplicables a tu negocio.
-						</p>
 					</div>
 				</div>
 			</div>
@@ -201,8 +185,6 @@
 					</div>
 				</div>
 
-				<!-- "por revisar" / "canceladas" se quitaron: requieren validación
-				     de CFDI cancelado (webservice del SAT) que no existe todavía -->
 				<div class="check-list">
 					<div class="check-item">
 						<div class="check-circle complete">✓</div>
@@ -385,6 +367,8 @@
 		display: flex;
 		align-items: flex-end;
 		justify-content: space-between;
+		gap: 20px;
+		flex-wrap: wrap;
 		margin-bottom: 28px;
 	}
 
@@ -411,8 +395,10 @@
 	.status-actions {
 		display: flex;
 		align-items: center;
+		justify-content: flex-end;
 		gap: 12px;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
+		margin-left: auto;
 	}
 
 	.status {
@@ -421,9 +407,10 @@
 		border-radius: 20px;
 		padding: 8px 13px;
 		font-size: 12px;
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		gap: 7px;
+		white-space: nowrap;
 	}
 
 	.sat-link {
@@ -437,6 +424,20 @@
 		text-decoration: none;
 		font-size: 12px;
 		font-weight: 700;
+		white-space: nowrap;
+	}
+
+	@media (max-width: 640px) {
+		.welcome {
+			align-items: flex-start;
+		}
+
+		.status-actions {
+			width: 100%;
+			justify-content: flex-start;
+			flex-wrap: wrap;
+			margin-left: 0;
+		}
 	}
 
 	.status-dot {

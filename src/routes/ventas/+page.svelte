@@ -54,8 +54,8 @@
 				</h1>
 
 				<p>
-					Registra las ventas de tu local, WhatsApp o entrega propia. Este MVP no incluye ventas de
-					plataformas digitales.
+					Registra las ventas de tu local, WhatsApp o entrega propia para llevar el control
+					operativo de tu negocio.
 				</p>
 			</section>
 
@@ -91,8 +91,8 @@
 				<strong>💡 No necesitas cambiar tu forma de trabajar.</strong>
 
 				<p>
-					Puedes registrar un resumen del periodo; más adelante añadiremos una importación real de
-					archivos para ventas directas.
+					Puedes registrar un resumen del periodo para mantener el control de ingresos y revisar tu
+					movimiento del negocio.
 				</p>
 			</section>
 		{:else if activeView === 'add'}

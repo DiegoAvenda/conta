@@ -78,22 +78,9 @@
 </svelte:head>
 
 <div class="font-body min-h-screen overflow-x-hidden bg-(--contaco-pizarra) text-(--contaco-tiza)">
-	<!-- Nav + Hero -->
+	<!-- Hero -->
 	<header class="border-b border-(--contaco-tiza)/10">
-		<div class="mx-auto max-w-7xl px-6 pt-8 lg:px-8">
-			<nav class="flex items-center justify-between">
-				<a href={resolve('/')} class="font-display text-xl font-bold tracking-tight">
-					contaco<span class="text-(--contaco-marigold)">.</span>
-				</a>
-
-				<a
-					href={resolve('/better-auth')}
-					class="rounded-md border border-(--contaco-tiza)/15 px-4 py-2 text-sm font-medium text-(--contaco-muted) transition hover:border-(--contaco-tiza)/30 hover:text-(--contaco-tiza)"
-				>
-					Iniciar sesión
-				</a>
-			</nav>
-
+		<div class="mx-auto max-w-7xl px-6 pt-16 lg:px-8 lg:pt-20">
 			<div
 				class="grid gap-16 pt-16 pb-24 lg:grid-cols-12 lg:items-center lg:gap-12 lg:pt-20 lg:pb-32"
 			>
