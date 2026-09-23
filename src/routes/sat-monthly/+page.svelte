@@ -42,33 +42,31 @@
 
 <div class="mx-auto max-w-6xl space-y-6 p-4 sm:p-6 lg:p-8">
 	<!-- Encabezado -->
-	<div class="rounded-3xl bg-slate-900 p-6 text-white shadow-xl sm:p-8">
+	<div class="rounded-3xl bg-neutral p-6 text-neutral-content shadow-xl sm:p-8">
 		<div class="flex flex-wrap items-center justify-between gap-4">
 			<div>
-				<p class="font-mono text-xs tracking-widest text-emerald-400 uppercase">
+				<p class="font-mono text-xs tracking-widest text-success uppercase">
 					DECLARACIÓN PROVISIONAL MENSUAL · RESICO PERSONAS FÍSICAS
 				</p>
 				<h1 class="mt-2 text-3xl font-black">Cierre Fiscal para el SAT</h1>
-				<p class="mt-1 text-sm text-slate-300">
+				<p class="mt-1 text-sm text-neutral-content/70">
 					Periodo: <strong>{nombresMes[data.mes - 1]} {data.anio}</strong> · Tasa RESICO calculada:
-					<span
-						class="inline-block rounded bg-emerald-500/20 px-2 py-0.5 font-mono text-emerald-300"
-					>
+					<span class="inline-block rounded bg-success/20 px-2 py-0.5 font-mono text-success">
 						{data.summary.sat.tasaIsrPorcentaje}
 					</span>
 				</p>
 			</div>
 			<div class="flex flex-col items-end gap-3 text-right">
-				<div class="rounded-2xl border border-slate-700 bg-slate-800/80 p-4">
-					<p class="text-xs text-slate-400">Total estimado a pagar al SAT</p>
-					<p class="text-3xl font-black text-emerald-400">
+				<div class="rounded-2xl border border-neutral-content/20 bg-neutral-content/10 p-4">
+					<p class="text-xs text-neutral-content/60">Total estimado a pagar al SAT</p>
+					<p class="text-3xl font-black text-success">
 						{formatMoney(data.summary.sat.totalEstimadoPagar)}
 					</p>
 				</div>
 				<button
 					type="button"
 					onclick={() => window.print()}
-					class="no-print btn border-white/30 btn-outline text-white btn-sm hover:bg-white hover:text-slate-900"
+					class="no-print btn border-neutral-content/30 btn-outline text-neutral-content btn-sm hover:bg-neutral-content hover:text-neutral"
 				>
 					🖨️ Imprimir / Guardar Ficha SAT (PDF)
 				</button>
@@ -112,8 +110,8 @@
 			</p>
 			<h2
 				class="mt-2 text-2xl font-black {data.summary.utilidad >= 0
-					? 'text-emerald-600'
-					: 'text-rose-600'}"
+					? 'text-success'
+					: 'text-error'}"
 			>
 				{formatMoney(data.summary.utilidad)}
 			</h2>
@@ -295,7 +293,7 @@
 						<span class="text-base-content/70">Ventas brutas:</span>
 						<strong>{formatMoney(data.summary.ventas.total)}</strong>
 					</div>
-					<div class="flex justify-between text-rose-600">
+					<div class="flex justify-between text-error">
 						<span>(-) Devoluciones/Cancelaciones:</span>
 						<strong
 							>-{formatMoney(
@@ -313,7 +311,7 @@
 					</div>
 					<div class="flex justify-between border-t-2 border-base-300 pt-3 text-base font-black">
 						<span>Utilidad operativa:</span>
-						<span class={data.summary.utilidad >= 0 ? 'text-emerald-600' : 'text-rose-600'}>
+						<span class={data.summary.utilidad >= 0 ? 'text-success' : 'text-error'}>
 							{formatMoney(data.summary.utilidad)}
 						</span>
 					</div>
