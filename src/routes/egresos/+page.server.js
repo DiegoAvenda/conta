@@ -1,23 +1,16 @@
 import { crearGastoManual, listarFacturas, eliminarFactura } from '$lib/server/facturas.js';
 import { fail } from '@sveltejs/kit';
+
 export async function load({ locals }) {
 	const userId = locals.user.id;
 	const facturas = await listarFacturas(userId);
-
 	const totalGastos = facturas.reduce((sum, f) => sum + Number(f.total ?? 0), 0);
-	const totalFacturados = facturas
-		.filter((f) => f.tieneCfdi)
-		.reduce((sum, f) => sum + Number(f.total ?? 0), 0);
-	const totalManuales = facturas
-		.filter((f) => !f.tieneCfdi)
-		.reduce((sum, f) => sum + Number(f.total ?? 0), 0);
 
 	return {
 		facturas,
 		resumen: {
-                total: totalGastos,
-                sinFactura: totalManuales,
-                cantidad: facturas.length
+			total: totalGastos,
+			cantidad: facturas.length
 		}
 	};
 }
@@ -55,8 +48,6 @@ export const actions = {
 			return fail(400, { error: error.message || 'No se pudo guardar el gasto.' });
 		}
 	},
-
-
 
 	eliminar: async ({ request, locals }) => {
 		const userId = locals.user.id;

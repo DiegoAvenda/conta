@@ -311,12 +311,6 @@
 						<span>(-) Gastos del negocio:</span>
 						<strong>-{formatMoney(data.summary.gastos.total)}</strong>
 					</div>
-					{#if data.summary.gastos.sinFactura > 0}
-						<div class="flex justify-between text-amber-600">
-							<span>(-) Insumos sin factura:</span>
-							<strong>-{formatMoney(data.summary.gastos.sinFactura)}</strong>
-						</div>
-					{/if}
 					<div class="flex justify-between border-t-2 border-base-300 pt-3 text-base font-black">
 						<span>Utilidad operativa:</span>
 						<span class={data.summary.utilidad >= 0 ? 'text-emerald-600' : 'text-rose-600'}>

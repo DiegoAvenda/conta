@@ -32,9 +32,8 @@ export function buildLedgerEntries({ ventas = [], facturas = [], movimientos = [
 	}
 
 	for (const factura of facturas) {
-		const esManual = factura.tieneCfdi === false || factura.tipo === 'gasto_manual';
 		entries.push({
-			tipo: esManual ? 'Gasto (Sin CFDI)' : 'Gasto',
+			tipo: 'Gasto',
 			monto: -Math.abs(Number(factura.total ?? 0)),
 			iva: -Math.abs(Number(factura.iva ?? 0)),
 			fecha: factura.fecha ?? new Date(),
@@ -62,29 +61,10 @@ export function buildLedgerEntries({ ventas = [], facturas = [], movimientos = [
 
 export function buildMonthlyFiscalSummary({ ventas = [], facturas = [], movimientos = [] } = {}) {
 	const ventasTotal = ventas.reduce((sum, venta) => sum + Number(venta.monto ?? 0), 0);
-
-	const facturasDeducibles = facturas.filter(
-		(f) => f.tieneCfdi !== false && String(f.tipo ?? '').toLowerCase() !== 'gasto_manual'
-	);
-	const facturasManuales = facturas.filter(
-		(f) => f.tieneCfdi === false || String(f.tipo ?? '').toLowerCase() === 'gasto_manual'
-	);
-
-	const gastosFacturadosTotal = facturasDeducibles.reduce(
-		(sum, factura) => sum + Number(factura.total ?? 0),
-		0
-	);
-	const gastosManualesTotal = facturasManuales.reduce(
-		(sum, factura) => sum + Number(factura.total ?? 0),
-		0
-	);
-	const gastosTotal = gastosFacturadosTotal + gastosManualesTotal;
+	const gastosTotal = facturas.reduce((sum, factura) => sum + Number(factura.total ?? 0), 0);
 
 	const ivaTrasladado = ventas.reduce((sum, venta) => sum + Number(venta.iva ?? 0), 0);
-	const ivaAcreditable = facturasDeducibles.reduce(
-		(sum, factura) => sum + Number(factura.iva ?? 0),
-		0
-	);
+	const ivaAcreditable = 0;
 	const devolucionesTotal = movimientos
 		.filter((m) => String(m.tipo).toLowerCase() === 'devolucion')
 		.reduce((sum, m) => sum + Number(m.monto ?? 0), 0);
@@ -116,8 +96,6 @@ export function buildMonthlyFiscalSummary({ ventas = [], facturas = [], movimien
 		},
 		gastos: {
 			total: gastosTotal,
-			conFactura: gastosFacturadosTotal,
-			sinFactura: gastosManualesTotal,
 			registros: facturas.length
 		},
 		iva: {

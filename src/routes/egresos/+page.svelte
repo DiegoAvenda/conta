@@ -59,28 +59,17 @@
 	</div>
 
 	<!-- Métricas Rápidas -->
-	<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+	<div class="grid gap-4 sm:grid-cols-2">
 		<div class="rounded-2xl border border-base-300 bg-base-100 p-5 shadow-sm">
 			<p class="font-mono text-xs tracking-wider text-base-content/60 uppercase">Total Gastado</p>
 			<h2 class="mt-2 text-2xl font-black">{formatMoney(data.resumen.total)}</h2>
-			<p class="mt-1 text-xs text-base-content/60">{data.resumen.cantidad} compras registradas</p>
+			<p class="mt-1 text-xs text-base-content/60">En compras del negocio</p>
 		</div>
 
 		<div class="rounded-2xl border border-base-300 bg-base-100 p-5 shadow-sm">
-			<p class="font-mono text-xs tracking-wider text-amber-600 uppercase">
-				Sin Factura (Efectivo)
-			</p>
-			<h2 class="mt-2 text-2xl font-black text-amber-600">
-				{formatMoney(data.resumen.sinFactura)}
-			</h2>
-			<p class="mt-1 text-xs text-base-content/60">Costo real de insumos diarios</p>
-		</div>
-
-		<div class="rounded-2xl border border-base-300 bg-base-100 p-5 shadow-sm">
-			<p class="font-mono text-xs tracking-wider text-base-content/60 uppercase">Nota</p>
-			<p class="mt-2 text-xs leading-relaxed font-medium text-base-content/75">
-				Por ahora el control de gastos es operativo; no se usa para deducción fiscal en RESICO.
-			</p>
+			<p class="font-mono text-xs tracking-wider text-base-content/60 uppercase">Compras</p>
+			<h2 class="mt-2 text-2xl font-black">{data.resumen.cantidad}</h2>
+			<p class="mt-1 text-xs text-base-content/60">Registros del historial</p>
 		</div>
 	</div>
 
@@ -271,9 +260,7 @@
 							<tr class="hover:bg-base-200/40">
 								<td class="font-mono text-xs">{factura.fecha}</td>
 								<td>
-									<span class="badge badge-ghost badge-sm text-[10px] font-medium">
-										Sin Factura
-									</span>
+									<span class="badge badge-ghost badge-sm text-[10px] font-medium"> Gasto </span>
 								</td>
 								<td>
 									<p class="font-semibold">
