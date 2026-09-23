@@ -88,7 +88,7 @@
 			<section class="mt-7 rounded-xl bg-base-300/50 px-5 py-4.5">
 				<strong class="text-[13px]">💡 Todo queda registrado de forma automática.</strong>
 
-				<p class="mt-1.5 text-[13px] leading-[1.5] text-base-content/60">
+				<p class="mt-1.5 text-[13px] leading-normal text-base-content/60">
 					Puedes revisar tus registros y confirmar el estado real de tu negocio sin entrar a un
 					flujo manual de captura.
 				</p>
@@ -141,7 +141,7 @@
 
 				<div class="overflow-x-auto">
 					<div
-						class="grid min-w-145 grid-cols-[1fr_1.2fr_1fr_1fr_30px] items-center gap-3 border-b border-base-200 py-[14px] pt-0 text-[11px] font-bold text-base-content/50"
+						class="grid min-w-145 grid-cols-[1fr_1.2fr_1fr_1fr_30px] items-center gap-3 border-b border-base-200 py-3.5 pt-0 text-[11px] font-bold text-base-content/50"
 					>
 						<span>Fecha</span>
 						<span>Método de cobro</span>
@@ -152,7 +152,7 @@
 
 					{#each data.ventas as venta (venta._id)}
 						<div
-							class="grid min-w-145 grid-cols-[1fr_1.2fr_1fr_1fr_30px] items-center gap-3 border-b border-base-200 py-[14px] text-[13px]"
+							class="grid min-w-145 grid-cols-[1fr_1.2fr_1fr_1fr_30px] items-center gap-3 border-b border-base-200 py-3.5 text-[13px]"
 						>
 							<span>
 								{new Date(venta.fecha + 'T12:00:00').toLocaleDateString('es-MX')}

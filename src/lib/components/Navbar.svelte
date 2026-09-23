@@ -4,9 +4,7 @@
 	let { user = null } = $props();
 </script>
 
-<header
-	class="navbar sticky top-0 z-50 border-b border-base-300 bg-base-100 px-4 shadow-sm sm:px-6"
->
+<header class="navbar sticky top-0 z-50 border-b border-base-300 bg-white px-4 shadow-sm sm:px-6">
 	<!-- Navbar Start: Logo + Menú Móvil -->
 	<div class="navbar-start gap-2">
 		<div class="dropdown">
@@ -33,7 +31,7 @@
 			</div>
 			<ul
 				tabindex="-1"
-				class="menu dropdown-content z-50 mt-3 w-64 menu-sm rounded-2xl border border-base-300 bg-base-100 p-3 shadow-xl"
+				class="menu dropdown-content z-50 mt-3 w-64 menu-sm rounded-2xl border border-base-200 bg-white p-3 shadow-xl ring-1 ring-slate-200/80"
 			>
 				{#if user}
 					<li class="menu-title text-xs font-bold tracking-wider text-primary uppercase">
@@ -76,7 +74,9 @@
 				<li>
 					<details>
 						<summary class="rounded-xl">Finanzas & SAT</summary>
-						<ul class="z-50 w-56 rounded-2xl border border-base-300 bg-base-100 p-2 shadow-lg">
+						<ul
+							class="z-50 w-56 rounded-2xl border border-base-200 bg-white p-2 shadow-lg ring-1 ring-slate-200/80"
+						>
 							<li><a href={resolve('/dashboard')}>Dashboard</a></li>
 							<li><a href={resolve('/ventas')}>Registro de Ventas</a></li>
 							<li><a href={resolve('/egresos')}>Gastos del negocio</a></li>
@@ -100,7 +100,7 @@
 		{#if user}
 			<div class="flex items-center gap-2">
 				<span
-					class="hidden max-w-[140px] truncate font-mono text-xs text-base-content/60 sm:inline-block"
+					class="hidden max-w-35 truncate font-mono text-xs text-base-content/60 sm:inline-block"
 				>
 					{user.name || user.email}
 				</span>

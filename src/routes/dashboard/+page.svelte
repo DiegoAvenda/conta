@@ -75,7 +75,7 @@
 	</header>
 
 	<main
-		class="mx-auto max-w-[1220px] px-7 pt-9.5 pb-15 max-[850px]:px-4 max-[850px]:pt-7 max-[850px]:pb-11.25"
+		class="mx-auto max-w-305 px-7 pt-9.5 pb-15 max-[850px]:px-4 max-[850px]:pt-7 max-[850px]:pb-11.25"
 	>
 		<section
 			class="mb-7 flex items-end justify-between gap-7.5 max-[600px]:flex-col max-[600px]:items-start max-[600px]:gap-3.75"
@@ -347,7 +347,7 @@
 
 			<div class="w-full max-[600px]:overflow-x-auto">
 				<div
-					class="grid grid-cols-[100px_1fr_100px_130px] items-center gap-3.75 bg-base-200 px-5.5 py-3.25 text-[10px] text-base-content/50 max-[600px]:min-w-[550px]"
+					class="grid grid-cols-[100px_1fr_100px_130px] items-center gap-3.75 bg-base-200 px-5.5 py-3.25 text-[10px] text-base-content/50 max-[600px]:min-w-137.5"
 				>
 					<span>Fecha</span>
 					<span>Descripción</span>
@@ -357,7 +357,7 @@
 
 				{#each data.movimientos as movimiento (movimiento.fecha + movimiento.descripcion)}
 					<div
-						class="grid grid-cols-[100px_1fr_100px_130px] items-center gap-3.75 border-t border-base-200 px-5.5 py-3.25 text-[11px] max-[600px]:min-w-[550px]"
+						class="grid grid-cols-[100px_1fr_100px_130px] items-center gap-3.75 border-t border-base-200 px-5.5 py-3.25 text-[11px] max-[600px]:min-w-137.5"
 					>
 						<span>
 							{new Date(movimiento.fecha + 'T12:00:00').toLocaleDateString('es-MX', {
