@@ -6,7 +6,6 @@
 	<nav>
 		<h6 class="footer-title">Onboarding</h6>
 		<a href={resolve('/better-auth')} class="link link-hover">Login</a>
-		<a href={resolve('/questions')} class="link link-hover">Questions</a>
 		<a href={resolve('/inscripcion')} class="link link-hover">Inscripcion</a>
 	</nav>
 	<nav>

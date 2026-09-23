@@ -53,7 +53,6 @@
 				{:else}
 					<li><a href={resolve('/')}>Inicio</a></li>
 					<li><a href={resolve('/inscripcion')}>Guía de Inscripción SAT</a></li>
-					<li><a href={resolve('/questions')}>Cuestionario Fiscal</a></li>
 				{/if}
 			</ul>
 		</div>
@@ -92,7 +91,6 @@
 			{:else}
 				<li><a href={resolve('/')} class="rounded-xl">Inicio</a></li>
 				<li><a href={resolve('/inscripcion')} class="rounded-xl">Guía SAT</a></li>
-				<li><a href={resolve('/questions')} class="rounded-xl">Diagnóstico Fiscal</a></li>
 			{/if}
 		</ul>
 	</div>
