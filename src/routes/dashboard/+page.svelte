@@ -40,7 +40,7 @@
 	}
 
 	function getTransactionClass(tipo) {
-		return tipo === 'Venta' ? 'positive' : 'negative';
+		return tipo === 'Venta' ? 'text-[#347843]' : 'text-[#9a3e3e]';
 	}
 </script>
 
@@ -48,12 +48,23 @@
 	<title>Contaco · Dashboard</title>
 </svelte:head>
 
-<div class="app">
-	<header class="topbar">
-		<div class="month-selector" style="margin-left: auto;">
-			<span>Periodo</span>
+<div class="min-h-screen bg-[#f5f6f8] font-sans text-[#17191d]">
+	<header
+		class="flex h-19 items-center justify-between border-b border-[#e7e8eb] bg-white px-10.5 max-[850px]:px-5 max-[600px]:h-auto max-[600px]:flex-col max-[600px]:items-start max-[600px]:gap-3.75 max-[600px]:p-4"
+	>
+		<div>
+			<div class="text-[25px] font-extrabold tracking-[-1px]">Contaco</div>
+			<div class="mt-px text-xs text-[#777b83]">Tu situación fiscal, sin hablar en idioma SAT.</div>
+		</div>
 
-			<select value={`${data.anio}-${data.mes}`} onchange={cambiarPeriodo}>
+		<div class="flex items-center gap-3">
+			<span class="text-[12px] text-[#777b83]">Periodo</span>
+
+			<select
+				class="font-inherit cursor-pointer rounded-[9px] border border-[#dddfe3] bg-white px-3 py-[9px] text-[#292c31]"
+				value={`${data.anio}-${data.mes}`}
+				onchange={cambiarPeriodo}
+			>
 				{#each nombresMes as nombre, i (nombre)}
 					<option value={`${data.anio}-${i + 1}`}>{nombre} {data.anio}</option>
 				{/each}
@@ -61,198 +72,288 @@
 		</div>
 	</header>
 
-	<main>
-		<section class="welcome">
+	<main
+		class="mx-auto max-w-[1220px] px-7 pt-9.5 pb-15 max-[850px]:px-4 max-[850px]:pt-7 max-[850px]:pb-11.25"
+	>
+		<section
+			class="mb-7 flex items-end justify-between gap-7.5 max-[600px]:flex-col max-[600px]:items-start max-[600px]:gap-3.75"
+		>
 			<div>
-				<p class="eyebrow">RESUMEN DEL MES</p>
-				<h1>Así va tu negocio</h1>
-				<p class="description">
+				<p class="mt-0 mb-1.75 text-[11px] font-bold tracking-[0.09em] text-[#7b8089]">
+					RESUMEN DEL MES
+				</p>
+				<h1
+					class="m-0 text-[32px] leading-tight font-bold tracking-[-1.2px] max-[600px]:text-[27px]"
+				>
+					Así va tu negocio
+				</h1>
+				<p class="mt-2 mb-0 text-sm text-[#777b83]">
 					Este es el resultado de tus ventas y gastos antes de preparar tu información fiscal.
 				</p>
 			</div>
 
-			<div class="status-actions">
-				<div class="status">
-					<span class="status-dot"></span>
+			<div class="flex shrink-0 flex-nowrap items-center gap-3">
+				<div
+					class="flex shrink-0 items-center gap-1.75 rounded-full bg-[#eef8f0] px-3.25 py-2 text-xs whitespace-nowrap text-[#28743b]"
+				>
+					<span class="h-1.75 w-1.75 rounded-full bg-[#3c9b53]"></span>
 					Información actualizada
 				</div>
-				<a class="sat-link" href={resolve(`/sat-monthly?anio=${data.anio}&mes=${data.mes}`)}>
+				<a
+					class="inline-flex shrink-0 items-center justify-center rounded-full bg-[#0f172a] px-3.5 py-2.25 text-xs font-bold whitespace-nowrap text-white no-underline"
+					href={resolve(`/sat-monthly?anio=${data.anio}&mes=${data.mes}`)}
+				>
 					Ver resumen SAT
 				</a>
 			</div>
 		</section>
 
-		<section class="main-result">
-			<div class="result-card">
-				<div class="result-header">
+		<section class="grid grid-cols-[1.15fr_0.85fr] gap-4.5 max-[850px]:grid-cols-1">
+			<div class="rounded-2xl border border-[#181a1f] bg-[#181a1f] p-6.25 text-white">
+				<div class="flex items-start justify-between">
 					<div>
-						<p class="card-label">IVA ESTIMADO</p>
-						<h2>Podrías pagar de IVA</h2>
+						<p class="mt-0 mb-1.75 text-[10px] font-bold tracking-[0.08em] uppercase opacity-60">
+							IVA ESTIMADO
+						</p>
+						<h2 class="m-0 text-[19px] font-bold">Podrías pagar de IVA</h2>
 					</div>
 
-					<div class="question">?</div>
+					<div
+						class="grid h-6.25 w-6.25 place-items-center rounded-full border border-[#4b4e54] text-xs text-[#a8abb1]"
+					>
+						?
+					</div>
 				</div>
 
-				<div class="tax-amount">
+				<div
+					class="mt-5.25 mb-0.75 text-[42px] font-bold tracking-[-1.8px] max-[600px]:text-[34px]"
+				>
 					{formatMoney(data.resumen.iva.estimado)}
 				</div>
 
-				<p class="tax-note">Estimación basada en la información registrada hasta ahora.</p>
+				<p class="m-0 text-xs text-[#999da5]">
+					Estimación basada en la información registrada hasta ahora.
+				</p>
 
-				<div class="tax-breakdown">
-					<div class="tax-row">
+				<div class="mt-5.75 border-t border-[#34373d] pt-4.25">
+					<div class="flex justify-between py-1.5 text-[13px] text-[#c5c7cc]">
 						<span>IVA trasladado</span>
-						<strong>{formatMoney(data.resumen.iva.trasladado)}</strong>
+						<strong class="text-white">{formatMoney(data.resumen.iva.trasladado)}</strong>
 					</div>
 
-					<div class="tax-row deduction">
+					<div class="flex justify-between py-1.5 text-[13px] text-[#c5c7cc]">
 						<span>IVA acreditable (gastos)</span>
-						<strong>-{formatMoney(data.resumen.iva.acreditable)}</strong>
+						<strong class="text-[#7fc68e]">-{formatMoney(data.resumen.iva.acreditable)}</strong>
+					</div>
+				</div>
+
+				<div
+					class="mt-4.25 flex gap-2.5 rounded-[10px] bg-[#24272d] p-3 text-[11px] text-[#c4c7cc]"
+				>
+					<span class="text-[15px] text-[#d2a84e]">ⓘ</span>
+					<div>
+						<strong class="text-white">El ISR todavía no se calcula en este MVP.</strong>
+						<p class="mt-0.75 mb-0 leading-[1.4]">
+							Antes de mostrar una cifra de ISR, Contaco debe confirmar tu régimen y validar las
+							reglas fiscales aplicables a tu negocio.
+						</p>
 					</div>
 				</div>
 			</div>
 
-			<div class="profit-card">
-				<div class="card-top">
+			<div class="rounded-2xl border border-[#e6e7ea] bg-white p-6.25">
+				<div class="flex items-start justify-between">
 					<div>
-						<p class="card-label">RESULTADO DEL NEGOCIO</p>
-						<h3>Ganancia estimada</h3>
+						<p class="mt-0 mb-1.75 text-[10px] font-bold tracking-[0.08em] uppercase opacity-60">
+							RESULTADO DEL NEGOCIO
+						</p>
+						<h3 class="m-0 text-[19px] font-bold">Ganancia estimada</h3>
 					</div>
 
-					<div class="trend">Este mes</div>
+					<div class="text-[11px] text-[#777b83]">Este mes</div>
 				</div>
 
-				<div class="profit-value">
+				<div class="mt-7.5 text-[42px] font-bold tracking-[-1.8px] max-[600px]:text-[34px]">
 					{formatMoney(data.resumen.utilidad)}
 				</div>
 
-				<div class="profit-bar">
-					<div class="profit-fill" style={`width: ${profitPct}%`}></div>
+				<div class="my-4.75 h-2 overflow-hidden rounded-full bg-[#eceef0]">
+					<div class="h-full rounded-[inherit] bg-[#25282d]" style={`width: ${profitPct}%`}></div>
 				</div>
 
-				<div class="profit-details">
-					<div>
-						<span>Ventas</span>
-						<strong>{formatMoney(data.resumen.ventas.total)}</strong>
+				<div class="grid grid-cols-2 gap-3.75">
+					<div class="flex flex-col gap-1">
+						<span class="text-[11px] text-[#858991]">Ventas</span>
+						<strong class="text-[15px] font-bold">{formatMoney(data.resumen.ventas.total)}</strong>
 					</div>
 
-					<div>
-						<span>Gastos</span>
-						<strong>-{formatMoney(data.resumen.gastos.total)}</strong>
+					<div class="flex flex-col gap-1">
+						<span class="text-[11px] text-[#858991]">Gastos</span>
+						<strong class="text-[15px] font-bold">-{formatMoney(data.resumen.gastos.total)}</strong>
 					</div>
 				</div>
 			</div>
 		</section>
 
-		<section class="metrics">
-			<div class="metric-card">
-				<div class="metric-icon sales">↗</div>
+		<section
+			class="my-4.5 grid grid-cols-3 gap-3.5 max-[850px]:grid-cols-2 max-[600px]:grid-cols-1"
+		>
+			<div
+				class="flex items-center gap-3.25 rounded-[13px] border border-[#e6e7ea] bg-white p-4.25"
+			>
+				<div
+					class="grid h-9.5 w-9.5 place-items-center rounded-[10px] bg-[#f0f1f3] text-[13px] font-bold"
+				>
+					↗
+				</div>
 
 				<div>
-					<span>Ventas</span>
-					<strong>{formatMoney(data.resumen.ventas.total)}</strong>
-					<small>{data.resumen.ventas.registros} registros</small>
+					<span class="mb-0.75 block text-[11px] text-[#777b83]">Ventas</span>
+					<strong class="block text-[17px] font-bold"
+						>{formatMoney(data.resumen.ventas.total)}</strong
+					>
+					<small class="mt-0.75 block text-[10px] text-[#999da5]"
+						>{data.resumen.ventas.registros} registros</small
+					>
 				</div>
 			</div>
 
-			<div class="metric-card">
-				<div class="metric-icon expenses">↘</div>
+			<div
+				class="flex items-center gap-3.25 rounded-[13px] border border-[#e6e7ea] bg-white p-4.25"
+			>
+				<div
+					class="grid h-9.5 w-9.5 place-items-center rounded-[10px] bg-[#f0f1f3] text-[13px] font-bold"
+				>
+					↘
+				</div>
 
 				<div>
-					<span>Gastos</span>
-					<strong>{formatMoney(data.resumen.gastos.total)}</strong>
-					<small>{data.resumen.gastos.registros} facturas</small>
+					<span class="mb-0.75 block text-[11px] text-[#777b83]">Gastos</span>
+					<strong class="block text-[17px] font-bold"
+						>{formatMoney(data.resumen.gastos.total)}</strong
+					>
+					<small class="mt-0.75 block text-[10px] text-[#999da5]"
+						>{data.resumen.gastos.registros} facturas</small
+					>
 				</div>
 			</div>
 
-			<div class="metric-card">
-				<div class="metric-icon iva">IVA</div>
+			<div
+				class="flex items-center gap-3.25 rounded-[13px] border border-[#e6e7ea] bg-white p-4.25"
+			>
+				<div
+					class="grid h-9.5 w-9.5 place-items-center rounded-[10px] bg-[#f0f1f3] text-[13px] font-bold"
+				>
+					IVA
+				</div>
 
 				<div>
-					<span>IVA identificado</span>
-					<strong>{formatMoney(data.resumen.iva.estimado)}</strong>
-					<small>Trasladado - acreditable</small>
+					<span class="mb-0.75 block text-[11px] text-[#777b83]">IVA identificado</span>
+					<strong class="block text-[17px] font-bold"
+						>{formatMoney(data.resumen.iva.estimado)}</strong
+					>
+					<small class="mt-0.75 block text-[10px] text-[#999da5]">Trasladado - acreditable</small>
 				</div>
 			</div>
 		</section>
 
-		<section class="grid">
-			<div class="panel">
-				<div class="panel-header">
+		<section class="grid grid-cols-2 gap-4.5 max-[850px]:grid-cols-1">
+			<div class="overflow-hidden rounded-[15px] border border-[#e6e7ea] bg-white">
+				<div class="flex items-center justify-between border-b border-[#eceef0] px-5.5 py-5.25">
 					<div>
-						<h2>Estado de tu información</h2>
-						<p>Lo que Contaco ha recibido este mes.</p>
+						<h2 class="m-0 text-base font-bold">Estado de tu información</h2>
+						<p class="mt-1 mb-0 text-[11px] text-[#858991]">Lo que Contaco ha recibido este mes.</p>
 					</div>
 				</div>
 
-				<div class="check-list">
-					<div class="check-item">
-						<div class="check-circle complete">✓</div>
-
-						<div class="check-content">
-							<strong>Ventas</strong>
-							<span>{data.resumen.ventas.registros} registros</span>
+				<div class="px-5 pt-1.25 pb-3">
+					<div
+						class="flex items-center gap-2.75 border-b border-[#f0f1f2] px-0.5 py-3.25 last:border-b-0"
+					>
+						<div
+							class="grid h-6.5 w-6.5 place-items-center rounded-full bg-[#edf7ef] text-xs font-bold text-[#347843]"
+						>
+							✓
 						</div>
 
-						<span class="complete-label">Listo</span>
+						<div class="flex flex-1 flex-col gap-px">
+							<strong class="text-xs font-bold">Ventas</strong>
+							<span class="text-[10px] text-[#858991]"
+								>{data.resumen.ventas.registros} registros</span
+							>
+						</div>
+
+						<span class="text-[10px] font-semibold text-[#347843]">Listo</span>
 					</div>
 
-					<div class="check-item">
-						<div class="check-content">
-							<strong>Gastos del negocio</strong>
-							<span>{data.resumen.gastos.registros} compras registradas</span>
+					<div
+						class="flex items-center gap-2.75 border-b border-[#f0f1f2] px-0.5 py-3.25 last:border-b-0"
+					>
+						<!-- Espacio reservado para icono cuando se requiera validar -->
+						<div class="flex flex-1 flex-col gap-px">
+							<strong class="text-xs font-bold">Facturas de gastos</strong>
+							<span class="text-[10px] text-[#858991]"
+								>{data.resumen.gastos.registros} CFDI registrados</span
+							>
 						</div>
 
-						<span class="complete-label">Listo</span>
+						<span class="text-[10px] font-semibold text-[#347843]">Listo</span>
 					</div>
 				</div>
 			</div>
 
-			<div class="panel">
-				<div class="panel-header">
+			<div class="overflow-hidden rounded-[15px] border border-[#e6e7ea] bg-white">
+				<div class="flex items-center justify-between border-b border-[#eceef0] px-5.5 py-5.25">
 					<div>
-						<h2>¿Cómo cobraron tus ventas?</h2>
-						<p>Desglose de tus ventas directas por método de cobro.</p>
+						<h2 class="m-0 text-base font-bold">¿Cómo cobraron tus ventas?</h2>
+						<p class="mt-1 mb-0 text-[11px] text-[#858991]">
+							Desglose de tus ventas directas por método de cobro.
+						</p>
 					</div>
 				</div>
 
-				<div class="channels">
+				<div class="px-5.5 py-4.75">
 					{#each data.resumen.metodosPago as metodo (metodo.metodoPago)}
-						<div class="channel">
-							<div class="channel-info">
-								<strong>{metodo.metodoPago}</strong>
-								<span>{formatMoney(metodo.total)}</span>
+						<div class="mb-5.25 grid grid-cols-[1fr_130px_35px] items-center gap-3 last:mb-0">
+							<div class="flex justify-between text-[11px]">
+								<strong class="font-semibold">{metodo.metodoPago}</strong>
+								<span class="text-[#777b83]">{formatMoney(metodo.total)}</span>
 							</div>
 
-							<div class="channel-bar">
+							<div class="h-1.75 overflow-hidden rounded-full bg-[#eceef0]">
 								<div
+									class="h-full rounded-[inherit] bg-[#292c31]"
 									style={`width: ${data.resumen.ventas.total > 0 ? (metodo.total / data.resumen.ventas.total) * 100 : 0}%`}
 								></div>
 							</div>
 
-							<small>
+							<small class="text-right text-[10px] text-[#777b83]">
 								{data.resumen.ventas.total > 0
 									? Math.round((metodo.total / data.resumen.ventas.total) * 100)
 									: 0}%
 							</small>
 						</div>
 					{:else}
-						<p style="color: #858991; font-size: 12px;">Sin ventas registradas este mes.</p>
+						<p class="m-0 text-xs text-[#858991]">Sin ventas registradas este mes.</p>
 					{/each}
 				</div>
 			</div>
 		</section>
 
-		<section class="activity panel">
-			<div class="panel-header">
+		<section class="mt-4.5 overflow-hidden rounded-[15px] border border-[#e6e7ea] bg-white">
+			<div class="flex items-center justify-between border-b border-[#eceef0] px-5.5 py-5.25">
 				<div>
-					<h2>Últimos movimientos</h2>
-					<p>Ventas y gastos registrados recientemente.</p>
+					<h2 class="m-0 text-base font-bold">Últimos movimientos</h2>
+					<p class="mt-1 mb-0 text-[11px] text-[#858991]">
+						Ventas y gastos registrados recientemente.
+					</p>
 				</div>
 			</div>
 
-			<div class="table">
-				<div class="table-head">
+			<div class="w-full max-[600px]:overflow-x-auto">
+				<div
+					class="grid grid-cols-[100px_1fr_100px_130px] items-center gap-3.75 bg-[#fafafa] px-5.5 py-3.25 text-[10px] text-[#858991] max-[600px]:min-w-[550px]"
+				>
 					<span>Fecha</span>
 					<span>Descripción</span>
 					<span>Tipo</span>
@@ -260,15 +361,17 @@
 				</div>
 
 				{#each data.movimientos as movimiento (movimiento.fecha + movimiento.descripcion)}
-					<div class="table-row">
-						<span
-							>{new Date(movimiento.fecha + 'T12:00:00').toLocaleDateString('es-MX', {
+					<div
+						class="grid grid-cols-[100px_1fr_100px_130px] items-center gap-3.75 border-t border-[#f0f1f2] px-5.5 py-3.25 text-[11px] max-[600px]:min-w-[550px]"
+					>
+						<span>
+							{new Date(movimiento.fecha + 'T12:00:00').toLocaleDateString('es-MX', {
 								day: '2-digit',
 								month: 'short'
-							})}</span
-						>
+							})}
+						</span>
 
-						<strong>{movimiento.descripcion}</strong>
+						<strong class="font-semibold">{movimiento.descripcion}</strong>
 
 						<span class={getTransactionClass(movimiento.tipo)}>
 							{movimiento.tipo}
@@ -280,614 +383,9 @@
 						</span>
 					</div>
 				{:else}
-					<p style="padding: 20px 22px; color: #858991; font-size: 12px;">
-						Sin movimientos este mes.
-					</p>
+					<p class="m-0 px-5.5 py-5 text-xs text-[#858991]">Sin movimientos este mes.</p>
 				{/each}
 			</div>
 		</section>
 	</main>
 </div>
-
-<style>
-	:global(*) {
-		box-sizing: border-box;
-	}
-
-	:global(body) {
-		margin: 0;
-		background: #f5f6f8;
-		color: #17191d;
-		font-family:
-			Inter,
-			system-ui,
-			-apple-system,
-			BlinkMacSystemFont,
-			'Segoe UI',
-			sans-serif;
-	}
-
-	select {
-		font: inherit;
-	}
-
-	.app {
-		min-height: 100vh;
-	}
-
-	.topbar {
-		height: 76px;
-		padding: 0 42px;
-		background: white;
-		border-bottom: 1px solid #e7e8eb;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-
-	.brand {
-		font-size: 25px;
-		font-weight: 800;
-		letter-spacing: -1px;
-	}
-
-	.subtitle {
-		color: #777b83;
-		font-size: 12px;
-		margin-top: 2px;
-	}
-
-	.month-selector {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-	}
-
-	.month-selector span {
-		font-size: 12px;
-		color: #777b83;
-	}
-
-	select {
-		border: 1px solid #dddfe3;
-		background: white;
-		border-radius: 9px;
-		padding: 9px 12px;
-		color: #292c31;
-		cursor: pointer;
-	}
-
-	main {
-		max-width: 1220px;
-		margin: auto;
-		padding: 38px 28px 60px;
-	}
-
-	.welcome {
-		display: flex;
-		align-items: flex-end;
-		justify-content: space-between;
-		gap: 20px;
-		flex-wrap: wrap;
-		margin-bottom: 28px;
-	}
-
-	.eyebrow {
-		margin: 0 0 7px;
-		font-size: 11px;
-		font-weight: 700;
-		color: #7b8089;
-		letter-spacing: 0.09em;
-	}
-
-	h1 {
-		font-size: 32px;
-		margin: 0;
-		letter-spacing: -1.2px;
-	}
-
-	.description {
-		color: #777b83;
-		margin: 8px 0 0;
-		font-size: 14px;
-	}
-
-	.status-actions {
-		display: flex;
-		align-items: center;
-		justify-content: flex-end;
-		gap: 12px;
-		flex-wrap: nowrap;
-		margin-left: auto;
-	}
-
-	.status {
-		background: #eef8f0;
-		color: #28743b;
-		border-radius: 20px;
-		padding: 8px 13px;
-		font-size: 12px;
-		display: inline-flex;
-		align-items: center;
-		gap: 7px;
-		white-space: nowrap;
-	}
-
-	.sat-link {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 9px 14px;
-		background: #0f172a;
-		color: white;
-		border-radius: 999px;
-		text-decoration: none;
-		font-size: 12px;
-		font-weight: 700;
-		white-space: nowrap;
-	}
-
-	@media (max-width: 640px) {
-		.welcome {
-			align-items: flex-start;
-		}
-
-		.status-actions {
-			width: 100%;
-			justify-content: flex-start;
-			flex-wrap: wrap;
-			margin-left: 0;
-		}
-	}
-
-	.status-dot {
-		width: 7px;
-		height: 7px;
-		border-radius: 50%;
-		background: #3c9b53;
-	}
-
-	.main-result {
-		display: grid;
-		grid-template-columns: 1.15fr 0.85fr;
-		gap: 18px;
-	}
-
-	.result-card,
-	.profit-card {
-		background: white;
-		border: 1px solid #e6e7ea;
-		border-radius: 16px;
-		padding: 25px;
-	}
-
-	.result-card {
-		background: #181a1f;
-		color: white;
-		border-color: #181a1f;
-	}
-
-	.result-header,
-	.card-top {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-	}
-
-	.card-label {
-		margin: 0 0 7px;
-		font-size: 10px;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		opacity: 0.6;
-	}
-
-	h2,
-	h3 {
-		margin: 0;
-	}
-
-	.result-header h2 {
-		font-size: 19px;
-	}
-
-	.question {
-		width: 25px;
-		height: 25px;
-		border: 1px solid #4b4e54;
-		border-radius: 50%;
-		display: grid;
-		place-items: center;
-		font-size: 12px;
-		color: #a8abb1;
-	}
-
-	.tax-amount {
-		font-size: 42px;
-		font-weight: 750;
-		letter-spacing: -1.8px;
-		margin: 21px 0 3px;
-	}
-
-	.tax-note {
-		margin: 0;
-		color: #999da5;
-		font-size: 12px;
-	}
-
-	.tax-breakdown {
-		margin-top: 23px;
-		padding-top: 17px;
-		border-top: 1px solid #34373d;
-	}
-
-	.tax-row {
-		display: flex;
-		justify-content: space-between;
-		padding: 6px 0;
-		font-size: 13px;
-		color: #c5c7cc;
-	}
-
-	.tax-row strong {
-		color: white;
-	}
-
-	.tax-row.deduction strong {
-		color: #7fc68e;
-	}
-
-	.result-warning {
-		display: flex;
-		gap: 10px;
-		background: #24272d;
-		border-radius: 10px;
-		padding: 12px;
-		margin-top: 17px;
-		color: #c4c7cc;
-		font-size: 11px;
-	}
-
-	.result-warning span {
-		color: #d2a84e;
-		font-size: 15px;
-	}
-
-	.result-warning strong {
-		color: white;
-	}
-
-	.result-warning p {
-		margin: 3px 0 0;
-		line-height: 1.4;
-	}
-
-	.profit-card h3 {
-		font-size: 19px;
-	}
-
-	.trend {
-		font-size: 11px;
-		color: #777b83;
-	}
-
-	.profit-value {
-		font-size: 40px;
-		font-weight: 750;
-		letter-spacing: -1.5px;
-		margin-top: 30px;
-	}
-
-	.profit-bar {
-		height: 8px;
-		background: #eceef0;
-		border-radius: 10px;
-		margin: 19px 0 22px;
-		overflow: hidden;
-	}
-
-	.profit-fill {
-		height: 100%;
-		background: #25282d;
-		border-radius: inherit;
-	}
-
-	.profit-details {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 15px;
-	}
-
-	.profit-details div {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-	}
-
-	.profit-details span {
-		color: #858991;
-		font-size: 11px;
-	}
-
-	.profit-details strong {
-		font-size: 15px;
-	}
-
-	.metrics {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 14px;
-		margin: 18px 0;
-	}
-
-	.metric-card {
-		background: white;
-		border: 1px solid #e6e7ea;
-		border-radius: 13px;
-		padding: 17px;
-		display: flex;
-		align-items: center;
-		gap: 13px;
-	}
-
-	.metric-icon {
-		width: 38px;
-		height: 38px;
-		border-radius: 10px;
-		background: #f0f1f3;
-		display: grid;
-		place-items: center;
-		font-size: 13px;
-		font-weight: 700;
-	}
-
-	.metric-card span {
-		display: block;
-		color: #777b83;
-		font-size: 11px;
-		margin-bottom: 3px;
-	}
-
-	.metric-card strong {
-		display: block;
-		font-size: 17px;
-	}
-
-	.metric-card small {
-		display: block;
-		margin-top: 3px;
-		font-size: 10px;
-		color: #999da5;
-	}
-
-	.grid {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 18px;
-	}
-
-	.panel {
-		background: white;
-		border: 1px solid #e6e7ea;
-		border-radius: 15px;
-		overflow: hidden;
-	}
-
-	.panel-header {
-		padding: 21px 22px;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		border-bottom: 1px solid #eceef0;
-	}
-
-	.panel-header h2 {
-		font-size: 16px;
-	}
-
-	.panel-header p {
-		color: #858991;
-		font-size: 11px;
-		margin: 4px 0 0;
-	}
-
-	.check-list {
-		padding: 5px 20px 12px;
-	}
-
-	.check-item {
-		display: flex;
-		align-items: center;
-		gap: 11px;
-		padding: 13px 2px;
-		border-bottom: 1px solid #f0f1f2;
-	}
-
-	.check-item:last-child {
-		border-bottom: 0;
-	}
-
-	.check-circle {
-		width: 26px;
-		height: 26px;
-		border-radius: 50%;
-		display: grid;
-		place-items: center;
-		font-size: 12px;
-		font-weight: 700;
-		background: #f0f1f2;
-	}
-
-	.check-circle.complete {
-		color: #347843;
-		background: #edf7ef;
-	}
-
-	.check-content {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
-	}
-
-	.check-content strong {
-		font-size: 12px;
-	}
-
-	.check-content span {
-		color: #858991;
-		font-size: 10px;
-	}
-
-	.complete-label {
-		font-size: 10px;
-		font-weight: 600;
-		color: #347843;
-	}
-
-	.channels {
-		padding: 19px 22px;
-	}
-
-	.channel {
-		display: grid;
-		grid-template-columns: 1fr 130px 35px;
-		align-items: center;
-		gap: 12px;
-		margin-bottom: 21px;
-	}
-
-	.channel:last-child {
-		margin-bottom: 0;
-	}
-
-	.channel-info {
-		display: flex;
-		justify-content: space-between;
-		font-size: 11px;
-	}
-
-	.channel-info strong {
-		font-weight: 600;
-	}
-
-	.channel-info span {
-		color: #777b83;
-	}
-
-	.channel-bar {
-		height: 7px;
-		background: #eceef0;
-		border-radius: 10px;
-		overflow: hidden;
-	}
-
-	.channel-bar div {
-		height: 100%;
-		background: #292c31;
-		border-radius: inherit;
-	}
-
-	.channel small {
-		color: #777b83;
-		font-size: 10px;
-		text-align: right;
-	}
-
-	.activity {
-		margin-top: 18px;
-	}
-
-	.table {
-		width: 100%;
-	}
-
-	.table-head,
-	.table-row {
-		display: grid;
-		grid-template-columns: 100px 1fr 100px 130px;
-		align-items: center;
-		padding: 13px 22px;
-		gap: 15px;
-	}
-
-	.table-head {
-		background: #fafafa;
-		color: #858991;
-		font-size: 10px;
-	}
-
-	.table-row {
-		border-top: 1px solid #f0f1f2;
-		font-size: 11px;
-	}
-
-	.table-row strong {
-		font-weight: 600;
-	}
-
-	.positive {
-		color: #347843;
-	}
-
-	.negative {
-		color: #9a3e3e;
-	}
-
-	@media (max-width: 850px) {
-		.topbar {
-			padding: 0 20px;
-		}
-
-		main {
-			padding: 28px 16px 45px;
-		}
-
-		.main-result,
-		.grid {
-			grid-template-columns: 1fr;
-		}
-
-		.metrics {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-
-	@media (max-width: 600px) {
-		.topbar {
-			height: auto;
-			padding: 16px;
-			gap: 15px;
-			align-items: flex-start;
-			flex-direction: column;
-		}
-
-		.welcome {
-			align-items: flex-start;
-			flex-direction: column;
-			gap: 15px;
-		}
-
-		h1 {
-			font-size: 27px;
-		}
-
-		.metrics {
-			grid-template-columns: 1fr;
-		}
-
-		.tax-amount,
-		.profit-value {
-			font-size: 34px;
-		}
-
-		.table {
-			overflow-x: auto;
-		}
-
-		.table-head,
-		.table-row {
-			min-width: 550px;
-		}
-	}
-</style>
