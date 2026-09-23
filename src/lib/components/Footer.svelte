@@ -8,7 +8,6 @@
 		<a href={resolve('/better-auth')} class="link link-hover">Login</a>
 		<a href={resolve('/questions')} class="link link-hover">Questions</a>
 		<a href={resolve('/inscripcion')} class="link link-hover">Inscripcion</a>
-		<a href={resolve('/pedir-factura-gasto')} class="link link-hover">Pedir factura gasto</a>
 	</nav>
 	<nav>
 		<h6 class="footer-title">Regitro de actividad</h6>

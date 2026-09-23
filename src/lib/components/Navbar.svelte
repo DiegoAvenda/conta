@@ -48,9 +48,8 @@
 					</li>
 					<li><a href={resolve('/dashboard')}>📊 Dashboard General</a></li>
 					<li><a href={resolve('/ventas')}>💵 Registro de Ventas</a></li>
-					<li><a href={resolve('/egresos')}>📑 Gastos y Facturas XML</a></li>
+					<li><a href={resolve('/egresos')}>📑 Gastos del negocio</a></li>
 					<li><a href={resolve('/sat-monthly')}>🏛️ Cierre Mensual SAT (RESICO)</a></li>
-					<li><a href={resolve('/pedir-factura-gasto')}>🏷️ Ficha Fiscal (RFC)</a></li>
 				{:else}
 					<li><a href={resolve('/')}>Inicio</a></li>
 					<li><a href={resolve('/inscripcion')}>Guía de Inscripción SAT</a></li>
@@ -81,13 +80,12 @@
 						<ul class="z-50 w-56 rounded-2xl border border-base-200 bg-base-100 p-2 shadow-lg">
 							<li><a href={resolve('/dashboard')}>Dashboard</a></li>
 							<li><a href={resolve('/ventas')}>Registro de Ventas</a></li>
-							<li><a href={resolve('/egresos')}>Facturas y Gastos</a></li>
+							<li><a href={resolve('/egresos')}>Gastos del negocio</a></li>
 							<li>
 								<a href={resolve('/sat-monthly')} class="font-bold text-primary"
 									>Cierre SAT RESICO</a
 								>
 							</li>
-							<li><a href={resolve('/pedir-factura-gasto')}>Ficha Fiscal (RFC)</a></li>
 						</ul>
 					</details>
 				</li>

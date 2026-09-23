@@ -241,8 +241,10 @@
 
 					<div class="flex items-center justify-between border-b border-base-200 py-1 text-sm">
 						<div>
-							<p class="font-medium">IVA acreditable del periodo (Gastos)</p>
-							<p class="text-xs text-base-content/60">De facturas XML de proveedores cargadas</p>
+							<p class="font-medium">Gastos operativos del periodo</p>
+							<p class="text-xs text-base-content/60">
+								Registro interno del negocio sin deducción por CFDI
+							</p>
 						</div>
 						<div class="flex items-center gap-2">
 							<strong class="font-mono text-base"
@@ -306,10 +308,8 @@
 						<span>{formatMoney(data.summary.sat.ingresosEfectivamenteCobrados)}</span>
 					</div>
 					<div class="flex justify-between text-base-content/80">
-						<span>(-) Insumos con CFDI:</span>
-						<strong
-							>-{formatMoney(data.summary.gastos.conFactura ?? data.summary.gastos.total)}</strong
-						>
+						<span>(-) Gastos del negocio:</span>
+						<strong>-{formatMoney(data.summary.gastos.total)}</strong>
 					</div>
 					{#if data.summary.gastos.sinFactura > 0}
 						<div class="flex justify-between text-amber-600">

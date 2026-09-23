@@ -217,8 +217,8 @@
 
 					<div class="check-item">
 						<div class="check-content">
-							<strong>Facturas de gastos</strong>
-							<span>{data.resumen.gastos.registros} CFDI registrados</span>
+							<strong>Gastos del negocio</strong>
+							<span>{data.resumen.gastos.registros} compras registradas</span>
 						</div>
 
 						<span class="complete-label">Listo</span>

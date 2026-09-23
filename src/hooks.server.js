@@ -7,7 +7,6 @@ const rutasProtegidas = [
 	'/dashboard',
 	'/ventas',
 	'/egresos',
-	'/pedir-factura-gasto',
 	'/pos',
 	'/orders',
 	'/configure-menu',
