@@ -12,8 +12,6 @@
 		<h6 class="footer-title">Regitro de actividad</h6>
 		<a href={resolve('/egresos')} class="link link-hover">Egresos</a>
 		<a href={resolve('/ventas')} class="link link-hover">Ventas</a>
-		<a href={resolve('/')} class="link link-hover">Jobs</a>
-		<a href={resolve('/')} class="link link-hover">Press kit</a>
 	</nav>
 	<nav>
 		<h6 class="footer-title">Resultados</h6>

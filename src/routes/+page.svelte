@@ -272,19 +272,6 @@
 			</div>
 		</div>
 	</section>
-
-	<!-- Footer -->
-	<footer class="border-t border-(--contaco-tiza)/10 py-8">
-		<div
-			class="mx-auto flex max-w-7xl flex-col gap-3 px-6 text-sm text-(--contaco-muted) sm:flex-row sm:items-center sm:justify-between lg:px-8"
-		>
-			<div>
-				<span class="font-display font-semibold text-(--contaco-tiza)">contaco.</span>
-				<span class="ml-2">Operación, ventas y finanzas en un solo lugar.</span>
-			</div>
-			<div>© 2026 Contaco</div>
-		</div>
-	</footer>
 </div>
 
 <style>

@@ -146,19 +146,6 @@
 						<strong class="text-[#7fc68e]">-{formatMoney(data.resumen.iva.acreditable)}</strong>
 					</div>
 				</div>
-
-				<div
-					class="mt-4.25 flex gap-2.5 rounded-[10px] bg-[#24272d] p-3 text-[11px] text-[#c4c7cc]"
-				>
-					<span class="text-[15px] text-[#d2a84e]">ⓘ</span>
-					<div>
-						<strong class="text-white">El ISR todavía no se calcula en este MVP.</strong>
-						<p class="mt-0.75 mb-0 leading-[1.4]">
-							Antes de mostrar una cifra de ISR, Contaco debe confirmar tu régimen y validar las
-							reglas fiscales aplicables a tu negocio.
-						</p>
-					</div>
-				</div>
 			</div>
 
 			<div class="rounded-2xl border border-[#e6e7ea] bg-white p-6.25">
