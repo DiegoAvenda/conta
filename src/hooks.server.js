@@ -10,7 +10,8 @@ const rutasProtegidas = [
 	'/pos',
 	'/orders',
 	'/configure-menu',
-	'/sat-monthly'
+	'/sat-monthly',
+	'/mi-restaurante'
 ];
 
 /** @type {import('@sveltejs/kit').Handle} */ const handleBetterAuth = async ({

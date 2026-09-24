@@ -1,11 +1,13 @@
 <script>
 	import { enhance } from '$app/forms';
+	import { resolve } from '$app/paths';
 
-	let { form } = $props();
+	let { data, form } = $props();
 </script>
 
 <h1>Login</h1>
 <form method="post" action="?/signInEmail" use:enhance>
+	<input type="hidden" name="callback" value={data.callback ?? ''} />
 	<label>
 		Email
 		<input
@@ -38,13 +40,18 @@
 		>Register</button
 	>
 </form>
+{#if data.callback}
+	<p class="mt-2 text-sm">
+		<a class="link" href={resolve(data.callback)}>← Volver a la tienda</a>
+	</p>
+{/if}
 <p class="text-red-500">{form?.message ?? ''}</p>
 
 <hr class="my-4" />
 
 <form method="post" action="?/signInSocial" use:enhance>
 	<input type="hidden" name="provider" value="google" />
-	<input type="hidden" name="callbackURL" value="/better-auth" />
+	<input type="hidden" name="callbackURL" value={data.callback ?? '/better-auth'} />
 	<button class="rounded-md bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
 		>Sign in with Google</button
 	>

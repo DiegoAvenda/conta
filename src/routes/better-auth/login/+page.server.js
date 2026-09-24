@@ -6,11 +6,22 @@ import { APIError } from 'better-auth/api';
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ALLOWED_PROVIDERS = ['google'];
 
-export const load = (event) => {
-	if (event.locals.user) {
-		return redirect(302, '/better-auth');
+// Permite que el comensal regrese a la tienda después del login
+// (?callback=/hamburgueseria-1/checkout). Solo rutas relativas del mismo sitio.
+const leerCallback = (valor) => {
+	const callback = String(valor ?? '');
+	if (callback.startsWith('/') && !callback.startsWith('//') && callback.length <= 200) {
+		return callback;
 	}
-	return {};
+	return null;
+};
+
+export const load = (event) => {
+	const callback = leerCallback(event.url.searchParams.get('callback'));
+	if (event.locals.user) {
+		return redirect(302, callback ?? '/better-auth');
+	}
+	return { callback };
 };
 
 export const actions = {
@@ -41,7 +52,7 @@ export const actions = {
 			return fail(500, { message: 'Unexpected error' });
 		}
 
-		return redirect(302, '/better-auth');
+		return redirect(302, leerCallback(formData.get('callback')) ?? '/better-auth');
 	},
 	signUpEmail: async (event) => {
 		const formData = await event.request.formData();
@@ -75,12 +86,12 @@ export const actions = {
 			return fail(500, { message: 'Unexpected error' });
 		}
 
-		return redirect(302, '/better-auth');
+		return redirect(302, leerCallback(formData.get('callback')) ?? '/better-auth');
 	},
 	signInSocial: async (event) => {
 		const formData = await event.request.formData();
 		const provider = formData.get('provider')?.toString() ?? 'google';
-		const callbackURL = formData.get('callbackURL')?.toString() ?? '/better-auth';
+		const callbackURL = leerCallback(formData.get('callbackURL')) ?? '/better-auth';
 
 		if (!ALLOWED_PROVIDERS.includes(provider)) {
 			return fail(400, { message: 'Proveedor no soportado.' });

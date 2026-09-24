@@ -116,6 +116,18 @@
 						{/if}
 					</div>
 
+					<!-- Entrega (pedidos de la tienda pública) -->
+					{#if order.channel === 'delivery' && (order.buyer?.deliveryAddress || order.buyer?.phone)}
+						<div class="my-1 text-xs text-base-content/70">
+							{#if order.buyer?.deliveryAddress}
+								<p>📍 {order.buyer.deliveryAddress}</p>
+							{/if}
+							{#if order.buyer?.phone}
+								<p>📞 {order.buyer.phone}</p>
+							{/if}
+						</div>
+					{/if}
+
 					<!-- TABLA DE ITEMS -->
 					<table class="table mt-2 table-sm">
 						<thead>

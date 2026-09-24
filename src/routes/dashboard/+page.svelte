@@ -52,23 +52,24 @@
 	<header
 		class="flex h-19 items-center justify-between border-b border-base-300 bg-base-100 px-10.5 max-[850px]:px-5 max-[600px]:h-auto max-[600px]:flex-col max-[600px]:items-start max-[600px]:gap-3.75 max-[600px]:p-4"
 	>
-		<div>
-			<div class="text-[25px] font-extrabold tracking-[-1px]">Contaco</div>
-			<div class="mt-px text-xs text-base-content/50">
-				Tu situación fiscal, sin hablar en idioma SAT.
-			</div>
-		</div>
-
-		<div class="flex items-center gap-3">
+		<div class="ml-auto flex items-center gap-3">
 			<span class="text-[12px] text-base-content/50">Periodo</span>
 
 			<select
-				class="select-bordered select cursor-pointer select-sm"
+				class="select cursor-pointer border-base-300 bg-base-100 text-base-content shadow-sm select-sm"
+				style="color-scheme: light;"
 				value={`${data.anio}-${data.mes}`}
 				onchange={cambiarPeriodo}
 			>
 				{#each nombresMes as nombre, i (nombre)}
-					<option value={`${data.anio}-${i + 1}`}>{nombre} {data.anio}</option>
+					<option
+						class="bg-base-100 text-base-content"
+						style="background-color: var(--color-base-100, #ffffff); color: var(--color-base-content, #292625);"
+						value={`${data.anio}-${i + 1}`}
+					>
+						{nombre}
+						{data.anio}
+					</option>
 				{/each}
 			</select>
 		</div>

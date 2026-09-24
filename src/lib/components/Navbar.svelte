@@ -40,6 +40,7 @@
 					<li><a href={resolve('/pos')}>🧾 Punto de Venta (POS)</a></li>
 					<li><a href={resolve('/orders')}>🍳 Comandas / Cocina</a></li>
 					<li><a href={resolve('/configure-menu')}>📋 Menú del Negocio</a></li>
+					<li><a href={resolve('/mi-restaurante')}>🌐 Mi Tienda (pública)</a></li>
 
 					<li class="mt-2 menu-title text-xs font-bold tracking-wider text-primary uppercase">
 						Finanzas y SAT
@@ -70,6 +71,7 @@
 				<li><a href={resolve('/pos')} class="rounded-xl">POS</a></li>
 				<li><a href={resolve('/orders')} class="rounded-xl">Comandas</a></li>
 				<li><a href={resolve('/configure-menu')} class="rounded-xl">Menú</a></li>
+				<li><a href={resolve('/mi-restaurante')} class="rounded-xl">Mi Tienda</a></li>
 
 				<li>
 					<details>
