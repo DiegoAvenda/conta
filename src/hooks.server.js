@@ -5,7 +5,6 @@ import { svelteKitHandler } from 'better-auth/svelte-kit';
 
 const rutasProtegidas = [
 	'/dashboard',
-	'/ventas',
 	'/egresos',
 	'/pos',
 	'/orders',

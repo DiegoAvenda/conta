@@ -46,7 +46,6 @@
 						Finanzas y SAT
 					</li>
 					<li><a href={resolve('/dashboard')}>📊 Dashboard General</a></li>
-					<li><a href={resolve('/ventas')}>💵 Registro de Ventas</a></li>
 					<li><a href={resolve('/egresos')}>📑 Gastos del negocio</a></li>
 					<li><a href={resolve('/sat-monthly')}>🏛️ Cierre Mensual SAT (RESICO)</a></li>
 				{:else}
@@ -80,7 +79,6 @@
 							class="z-50 w-56 rounded-2xl border border-base-200 bg-white p-2 shadow-lg ring-1 ring-slate-200/80"
 						>
 							<li><a href={resolve('/dashboard')}>Dashboard</a></li>
-							<li><a href={resolve('/ventas')}>Registro de Ventas</a></li>
 							<li><a href={resolve('/egresos')}>Gastos del negocio</a></li>
 							<li>
 								<a href={resolve('/sat-monthly')} class="font-bold text-primary"
