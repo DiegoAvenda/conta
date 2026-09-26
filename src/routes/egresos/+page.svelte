@@ -146,10 +146,15 @@
 					<select
 						name="categoria"
 						bind:value={gastoManual.categoria}
-						class="select-bordered select w-full select-sm"
+						class="select-bordered select w-full bg-base-100 text-base-content select-sm"
+						style="color-scheme: light;"
 					>
 						{#each categorias as cat (cat)}
-							<option value={cat}>{cat}</option>
+							<option
+								class="bg-base-100 text-base-content"
+								style="background-color: var(--color-base-100, #ffffff); color: var(--color-base-content, #292625);"
+								value={cat}>{cat}</option
+							>
 						{/each}
 					</select>
 				</label>
@@ -192,11 +197,24 @@
 					<select
 						name="metodoPago"
 						bind:value={gastoManual.metodoPago}
-						class="select-bordered select w-full select-sm"
+						class="select-bordered select w-full bg-base-100 text-base-content select-sm"
+						style="color-scheme: light;"
 					>
-						<option value="cash">Efectivo</option>
-						<option value="card">Tarjeta / Terminal</option>
-						<option value="transfer">Transferencia (SPEI)</option>
+						<option
+							class="bg-base-100 text-base-content"
+							style="background-color: var(--color-base-100, #ffffff); color: var(--color-base-content, #292625);"
+							value="cash">Efectivo</option
+						>
+						<option
+							class="bg-base-100 text-base-content"
+							style="background-color: var(--color-base-100, #ffffff); color: var(--color-base-content, #292625);"
+							value="card">Tarjeta / Terminal</option
+						>
+						<option
+							class="bg-base-100 text-base-content"
+							style="background-color: var(--color-base-100, #ffffff); color: var(--color-base-content, #292625);"
+							value="transfer">Transferencia (SPEI)</option
+						>
 					</select>
 				</label>
 
