@@ -226,6 +226,25 @@
 		</div>
 	</section>
 
+	<!-- Tutorial / Demo pasos -->
+	<section class="border-b border-base-300 bg-gradient-to-b from-indigo-950 to-base-200 py-16">
+		<div class="mx-auto max-w-5xl px-6 text-center lg:px-8">
+			<h3 class="font-display text-2xl font-semibold tracking-tight text-white sm:text-3xl">Explora la demo paso a paso</h3>
+			<p class="mt-4 text-base leading-7 text-white/70">Sin registrarte, puedes ver datos de muestra de cada módulo.</p>
+			<div class="mt-8 flex flex-wrap justify-center gap-3">
+				{#each [
+					{ label: 'Inicio', path: '/' },
+					{ label: 'POS', path: '/pos' },
+					{ label: 'Dashboard', path: '/dashboard' },
+					{ label: 'Gastos', path: '/egresos' },
+					{ label: 'SAT', path: '/sat-monthly' }
+				] as s}
+					<a href={resolve(s.path)} class="btn btn-sm btn-outline border-white/20 text-white hover:bg-white hover:text-indigo-950">{s.label}</a>
+				{/each}
+			</div>
+		</div>
+	</section>
+
 	<!-- Pricing -->
 	<section class="bg-base-200 py-24 sm:py-28">
 		<div class="mx-auto max-w-5xl px-6 lg:px-8">

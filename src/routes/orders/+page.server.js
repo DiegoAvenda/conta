@@ -3,12 +3,7 @@ import { getDb } from '$lib/server/db.js';
 import { registrarVentaDesdePedido } from '$lib/server/ventas.js';
 import { registrarMovimiento, MOVIMIENTO_TIPOS } from '$lib/server/movimientos.js';
 import { ObjectId } from 'mongodb';
-
-// TODO (MVP): devoluciones/cancelaciones quedan fuera del alcance por ahora —
-// se asume que no hay devoluciones. Para el MVP el monto de un reembolso debe
-// descontar la base SIN IVA (no el total cobrado), para no subestimar el ingreso.
-const baseSinIva = (order) =>
-	Math.max(Number(order?.subtotal ?? order?.totalPrice ?? 0) - Number(order?.discount ?? 0), 0);
+import { demoOrders } from '$lib/demo/data.js';
 
 const formatTime = (value) => {
 	if (!value) return null;
@@ -21,7 +16,9 @@ const formatTime = (value) => {
 
 export const load = async ({ url, locals }) => {
 	if (!locals.user) {
-		return redirect(302, '/better-auth/login');
+		const status = url.searchParams.get('status') ?? 'pending';
+		const orders = demoOrders.map(o => ({ ...o, createdAt: o.createdAt, preparingAt: o.preparingAt, readyAt: o.readyAt, completedAt: o.completedAt }));
+		return { orders, filters: { status, channel: 'all', orderType: 'all', paymentStatus: 'all' } };
 	}
 
 	const status = url.searchParams.get('status') ?? 'pending';
@@ -32,9 +29,9 @@ export const load = async ({ url, locals }) => {
 	const query = { sellerId: locals.user.id };
 
 	if (status !== 'all') query.status = status;
-	if (channel) query.channel = channel; // 'delivery' o 'restaurant'
-	if (orderType) query.orderType = orderType; // 'dine-in' o 'takeout'
-	if (paymentStatus) query.paymentStatus = paymentStatus; // 'paid' o 'unpaid'
+	if (channel) query.channel = channel;
+	if (orderType) query.orderType = orderType;
+	if (paymentStatus) query.paymentStatus = paymentStatus;
 
 	try {
 		const db = await getDb();
@@ -62,7 +59,6 @@ export const load = async ({ url, locals }) => {
 
 		return {
 			orders,
-			// Regresamos los filtros activos para que la UI sepa qué botones pintar como "activos"
 			filters: { status, channel, orderType, paymentStatus }
 		};
 	} catch (e) {
@@ -112,10 +108,7 @@ export const actions = {
 			return { success: false };
 		}
 
-		await orders.updateOne(
-			{ _id: new ObjectId(orderId), sellerId: locals.user.id },
-			{ $set: update }
-		);
+		await orders.updateOne({ _id: new ObjectId(orderId), sellerId: locals.user.id }, { $set: update });
 
 		if (nextStatus === 'completed') {
 			await registrarVentaDesdePedido(locals.user.id, {
@@ -210,7 +203,7 @@ export const actions = {
 			userId: locals.user.id,
 			orderId,
 			tipo: MOVIMIENTO_TIPOS.DEVOLUCION,
-			amount: baseSinIva(existingOrder),
+			amount: Math.max(Number(existingOrder?.subtotal ?? existingOrder?.totalPrice ?? 0) - Number(existingOrder?.discount ?? 0), 0),
 			iva: Number(existingOrder.iva ?? 0),
 			paymentMethod: existingOrder.paymentMethod ?? 'cash',
 			metadata: { source: 'refundOrder', reason: 'manual-refund' },
@@ -249,7 +242,7 @@ export const actions = {
 			userId: locals.user.id,
 			orderId,
 			tipo: MOVIMIENTO_TIPOS.CANCELACION,
-			amount: baseSinIva(existingOrder),
+			amount: Math.max(Number(existingOrder?.subtotal ?? existingOrder?.totalPrice ?? 0) - Number(existingOrder?.discount ?? 0), 0),
 			iva: Number(existingOrder.iva ?? 0),
 			paymentMethod: existingOrder.paymentMethod ?? 'cash',
 			metadata: { source: 'cancelOrder', reason: 'manual-cancel' },

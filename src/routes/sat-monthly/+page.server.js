@@ -1,14 +1,25 @@
 import { getDb } from '$lib/server/db.js';
 import { buildMonthlyFiscalSummary } from '$lib/server/fiscal.js';
 import { crearFiltroVentasDirectas } from '$lib/server/ventas.js';
+import { demoSatMonthly } from '$lib/demo/data.js';
 
 export async function load({ locals, url }) {
+	const anio = Number(url.searchParams.get('anio')) || new Date().getFullYear();
+	const mes = Number(url.searchParams.get('mes')) || new Date().getMonth() + 1;
+
+	if (!locals.user) {
+		return {
+			anio,
+			mes,
+			summary: demoSatMonthly.summary,
+			message: demoSatMonthly.message
+		};
+	}
+
 	if (!locals.user) {
 		throw new Error('Usuario no autenticado');
 	}
 
-	const anio = Number(url.searchParams.get('anio')) || new Date().getFullYear();
-	const mes = Number(url.searchParams.get('mes')) || new Date().getMonth() + 1;
 	const inicio = new Date(anio, mes - 1, 1);
 	const fin = new Date(anio, mes, 1);
 	const db = await getDb();

@@ -3,6 +3,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import Navbar from '$lib/components/Navbar.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import TutorialOverlay from '$lib/components/TutorialOverlay.svelte';
 	import { initLocale } from '$lib/i18n/locale.svelte.js';
 	import { page } from '$app/state';
 
@@ -19,9 +20,10 @@
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
 {#if !enTienda}
-	<Navbar user={data.user} />
+	<Navbar user={data.user} isDemo={data.isDemo} />
 {/if}
 {@render children()}
+<TutorialOverlay isDemo={data.isDemo} />
 {#if !enTienda}
 	<Footer />
 {/if}

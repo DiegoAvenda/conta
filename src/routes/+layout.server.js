@@ -1,6 +1,7 @@
 export async function load({ locals }) {
 	return {
 		user: locals.user ?? null,
-		locale: locals.locale ?? 'es'
+		locale: locals.locale ?? 'es',
+		isDemo: !locals.user
 	};
 }

@@ -3,7 +3,7 @@
 	import LanguageToggle from '$lib/components/LanguageToggle.svelte';
 	import { t, i18n } from '$lib/i18n/locale.svelte.js';
 
-	let { user = null } = $props();
+	let { user = null, isDemo = false } = $props();
 	// Se lee para que el componente se re-renderice al cambiar el idioma.
 	void i18n.locale;
 </script>
@@ -54,6 +54,12 @@
 					<li><a href={resolve('/sat-monthly')}>{t('nav.satCloseFull')}</a></li>
 				{:else}
 					<li><a href={resolve('/')}>{t('nav.home')}</a></li>
+					<li><a href={resolve('/pos')}>{t('nav.posFull')}</a></li>
+					<li><a href={resolve('/orders')}>{t('nav.ordersFull')}</a></li>
+					<li><a href={resolve('/configure-menu')}>{t('nav.menuFull')}</a></li>
+					<li><a href={resolve('/dashboard')}>{t('nav.dashboardFull')}</a></li>
+					<li><a href={resolve('/egresos')}>{t('nav.expensesFull')}</a></li>
+					<li><a href={resolve('/sat-monthly')}>{t('nav.satCloseFull')}</a></li>
 					<li><a href={resolve('/inscripcion')}>{t('nav.satGuideFull')}</a></li>
 				{/if}
 				<li class="mt-2 flex items-center px-3 py-1 lg:hidden"><LanguageToggle compacto /></li>
@@ -95,6 +101,12 @@
 				</li>
 			{:else}
 				<li><a href={resolve('/')} class="rounded-xl">{t('nav.home')}</a></li>
+				<li><a href={resolve('/pos')} class="rounded-xl">{t('nav.pos')}</a></li>
+				<li><a href={resolve('/orders')} class="rounded-xl">{t('nav.orders')}</a></li>
+				<li><a href={resolve('/configure-menu')} class="rounded-xl">{t('nav.menu')}</a></li>
+				<li><a href={resolve('/dashboard')} class="rounded-xl">{t('nav.dashboard')}</a></li>
+				<li><a href={resolve('/egresos')} class="rounded-xl">{t('nav.expenses')}</a></li>
+				<li><a href={resolve('/sat-monthly')} class="rounded-xl">{t('nav.satClose')}</a></li>
 				<li><a href={resolve('/inscripcion')} class="rounded-xl">{t('nav.satGuide')}</a></li>
 			{/if}
 		</ul>
@@ -115,6 +127,14 @@
 				</a>
 			</div>
 		{:else}
+			{#if isDemo}
+				<span
+					class="hidden rounded-full bg-slate-900 px-2.5 py-1 text-[11px] font-semibold text-white sm:inline-block"
+					title="Estás viendo datos de ejemplo"
+				>
+					Modo demo
+				</span>
+			{/if}
 			<a href={resolve('/better-auth/login')} class="btn rounded-xl px-4 btn-primary btn-sm">
 				{t('nav.login')}
 			</a>

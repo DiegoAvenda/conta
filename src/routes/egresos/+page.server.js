@@ -1,12 +1,12 @@
 import { crearGastoManual, listarFacturas, eliminarFactura } from '$lib/server/facturas.js';
 import { fail } from '@sveltejs/kit';
-
-// TODO (MVP): la carga de CFDI (XML) para gastos deducibles quedó pendiente.
-// El parser y la función `crearFacturaDesdeXml` ya existen en `$lib/server/cfdi.js`
-// y `$lib/server/facturas.js`; falta exponer el action + formulario de subida.
-// Sin CFDI, todos los gastos son manuales (iva: 0) y el IVA acreditable es 0.
+import { demoEgresos } from '$lib/demo/data.js';
 
 export async function load({ locals }) {
+	if (!locals.user) {
+		return { facturas: demoEgresos.facturas, resumen: demoEgresos.resumen };
+	}
+
 	const userId = locals.user.id;
 	const facturas = await listarFacturas(userId);
 	const totalGastos = facturas.reduce((sum, f) => sum + Number(f.total ?? 0), 0);
@@ -22,6 +22,10 @@ export async function load({ locals }) {
 
 export const actions = {
 	crearManual: async ({ request, locals }) => {
+		if (!locals.user) {
+			return fail(401, { error: 'Inicia sesión para registrar gastos reales.' });
+		}
+
 		const userId = locals.user.id;
 		const datos = await request.formData();
 
@@ -33,7 +37,7 @@ export const actions = {
 		const fecha = datos.get('fecha')?.toString().trim();
 
 		if (!concepto) {
-			return fail(400, { error: 'El concepto del gasto es obligatorio (ej. Limones y verdura).' });
+			return fail(400, { error: 'El concepto del gasto es obligatorio.' });
 		}
 		if (!total) {
 			return fail(400, { error: 'El importe del gasto es obligatorio.' });
@@ -55,6 +59,10 @@ export const actions = {
 	},
 
 	eliminar: async ({ request, locals }) => {
+		if (!locals.user) {
+			return fail(401, { error: 'No autorizado.' });
+		}
+
 		const userId = locals.user.id;
 		const datos = await request.formData();
 		await eliminarFactura(userId, datos.get('id'));

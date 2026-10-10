@@ -1,8 +1,9 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import { ObjectId } from 'mongodb';
 import { getDb } from '$lib/server/db';
 import { parseMoneyToCents } from '$lib/server/money.js';
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { demoMenuItems } from '$lib/demo/data.js';
 
 import {
 	R2_ACCOUNT_ID,
@@ -26,7 +27,9 @@ const MAX_DESC = 72;
 
 export async function load({ locals }) {
 	if (!locals.user) {
-		return redirect(302, '/better-auth/login');
+		return {
+			items: demoMenuItems.map(item => ({ ...item, _id: item._id, imageUrl: item.imageUrl }))
+		};
 	}
 
 	const db = await getDb();
@@ -48,6 +51,10 @@ export async function load({ locals }) {
 
 export const actions = {
 	create: async ({ request, locals }) => {
+		if (!locals.user) {
+			return fail(401, { error: 'No autorizado (modo demo: inicia sesión para crear productos).' });
+		}
+
 		const userId = locals.user.id;
 		const form = await request.formData();
 
@@ -71,7 +78,7 @@ export const actions = {
 
 		if (name.length > MAX_TITLE || category.length > MAX_TITLE) {
 			return fail(400, {
-				error: `Nombre y categoría no pueden pasar de ${MAX_TITLE} caracteres (límite de listas de WhatsApp).`
+				error: `Nombre y categoría no pueden pasar de ${MAX_TITLE} caracteres.`
 			});
 		}
 

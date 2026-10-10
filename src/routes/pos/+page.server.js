@@ -3,10 +3,13 @@ import { getDb } from '$lib/server/db.js';
 import { registrarVentaDesdePedido } from '$lib/server/ventas.js';
 import { parseMoneyToCents } from '$lib/server/money.js';
 import { R2_PUBLIC_URL } from '$env/static/private';
+import { demoMenuItems } from '$lib/demo/data.js';
 
 export async function load({ locals }) {
 	if (!locals.user) {
-		return redirect(302, '/better-auth/login');
+		return {
+			items: demoMenuItems.map(item => ({ ...item, _id: item._id, imageUrl: item.imageUrl }))
+		};
 	}
 
 	const db = await getDb();
@@ -40,7 +43,6 @@ export const actions = {
 		const customerPhone = data.get('customerPhone')?.toString().trim() ?? null;
 		const rawDiscount = data.get('discount') ?? '0';
 		const rawTaxRate = data.get('taxRate') ?? '16';
-		// 'dine-in' = comensal en mesa; 'takeout' = comensal que llega y pide para llevar
 		const rawOrderType = data.get('orderType')?.toString() ?? 'dine-in';
 
 		if (!['cash', 'card'].includes(paymentMethod)) {
@@ -65,7 +67,7 @@ export const actions = {
 		if (tableNumber !== null && tableNumber !== undefined && tableNumber !== '') {
 			const parsedTable = Number(tableNumber);
 			if (!Number.isInteger(parsedTable) || parsedTable <= 0) {
-				return fail(400, { error: 'Número de mesa inválido.' });
+			return fail(400, { error: 'Número de mesa inválido.' });
 			}
 		}
 
