@@ -1,71 +1,80 @@
 <script>
 	import { resolve } from '$app/paths';
+	import { t, i18n } from '$lib/i18n/locale.svelte.js';
 
-	const features = [
-		{
-			id: 'pos-speed',
-			title: 'POS pensado para trabajar rápido',
-			description:
-				'Registra ventas, mesas y comandas desde una interfaz diseñada para el ritmo real de un restaurante.'
-		},
+	// Se lee para re-renderizar al cambiar el idioma.
+	const lang = $derived(i18n.locale);
+	void lang;
+
+	const features = $derived([
+		{ id: 'pos-speed', title: t('landing.feature0Title'), description: t('landing.feature0Desc') },
 		{
 			id: 'omnichannel-orders',
-			title: 'Pedidos directos, sin comisiones',
-			description:
-				'Recibe pedidos para llevar y delivery propio en el mismo sistema, junto con las ventas de tu local.'
+			title: t('landing.feature1Title'),
+			description: t('landing.feature1Desc')
 		},
 		{
 			id: 'sat-automation',
-			title: 'Tus números listos para el SAT',
-			description:
-				'Contaco organiza tus ventas y movimientos para mostrarte la información que necesitas al momento de preparar tu declaración.'
+			title: t('landing.feature2Title'),
+			description: t('landing.feature2Desc')
 		},
 		{
 			id: 'financial-metrics',
-			title: 'Entiende realmente tu negocio',
-			description:
-				'Controla ingresos, gastos, insumos y utilidad sin convertir Excel en el quinto empleado del restaurante.'
+			title: t('landing.feature3Title'),
+			description: t('landing.feature3Desc')
 		}
-	];
+	]);
 
-	const ticketItems = ['Punto de venta', 'Pedidos WhatsApp', 'Módulo SAT', 'Panel financiero'];
+	const ticketItems = $derived([
+		t('landing.ticket0'),
+		t('landing.ticket1'),
+		t('landing.ticket2'),
+		t('landing.ticket3')
+	]);
 
-	const today = new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
+	const today = $derived(
+		new Date().toLocaleDateString(i18n.locale === 'en' ? 'en-US' : 'es-MX', {
+			day: 'numeric',
+			month: 'short'
+		})
+	);
 
-	const pricingPlans = [
+	const pricingPlans = $derived([
 		{
 			id: 'plan-monthly',
-			name: 'Mensual',
-			description: 'Para empezar sin compromiso.',
+			name: t('landing.monthlyName'),
+			description: t('landing.monthlyDesc'),
 			price: '599.00',
-			billing: 'MXN / mes',
+			billing: t('landing.monthlyBilling'),
 			isPopular: false,
 			targetRoute: '/better-auth',
+			cta: t('landing.chooseMonthly'),
 			lineItems: [
-				'Punto de venta ilimitado',
-				'Pedidos online',
-				'Módulo fiscal y guía SAT',
-				'Control de gastos',
-				'Soporte técnico prioritario'
+				t('landing.monthlyItem0'),
+				t('landing.monthlyItem1'),
+				t('landing.monthlyItem2'),
+				t('landing.monthlyItem3'),
+				t('landing.monthlyItem4')
 			]
 		},
 		{
 			id: 'plan-yearly',
-			name: 'Anual Pro',
-			description: 'Más ahorro y más acompañamiento.',
+			name: t('landing.yearlyName'),
+			description: t('landing.yearlyDesc'),
 			price: '479.00',
-			billing: 'MXN / mes, cobrado anualmente',
+			billing: t('landing.yearlyBilling'),
 			isPopular: true,
 			targetRoute: '/better-auth',
+			cta: t('landing.chooseYearly'),
 			lineItems: [
-				'Todo lo del plan Mensual',
-				'2 meses gratis al año',
-				'Importación inicial de menú',
-				'Capacitación personalizada',
-				'Acompañamiento en configuración fiscal'
+				t('landing.yearlyItem0'),
+				t('landing.yearlyItem1'),
+				t('landing.yearlyItem2'),
+				t('landing.yearlyItem3'),
+				t('landing.yearlyItem4')
 			]
 		}
-	];
+	]);
 </script>
 
 <svelte:head>
@@ -88,12 +97,11 @@
 					<h1
 						class="font-display text-4xl leading-[1.1] font-semibold tracking-tight sm:text-5xl lg:text-6xl"
 					>
-						Todo tu restaurante en un solo ticket.
+						{t('landing.heroTitle')}
 					</h1>
 
 					<p class="mt-6 max-w-md text-base leading-7 text-base-content/60 sm:text-lg sm:leading-8">
-						Contaco conecta tu punto de venta, pedidos directos, gastos e información fiscal en un
-						solo lugar, para que dejes de saltar entre cinco sistemas distintos.
+						{t('landing.heroSub')}
 					</p>
 
 					<div class="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -101,18 +109,18 @@
 							href={resolve('/better-auth')}
 							class="btn rounded-md px-7 py-3.5 text-center text-sm font-semibold btn-primary"
 						>
-							Entrar a la app
+							{t('landing.enterApp')}
 						</a>
 						<a
 							href={resolve('/inscripcion')}
 							class="rounded-md border border-base-300 px-7 py-3.5 text-center text-sm font-semibold text-base-content transition hover:border-base-content/30"
 						>
-							Guía SAT
+							{t('landing.satGuideBtn')}
 						</a>
 					</div>
 
 					<p class="mt-5 max-w-sm text-xs leading-5 text-base-content/50">
-						Sin contrato, sin comisiones por venta y cancelas cuando quieras.
+						{t('landing.noContract')}
 					</p>
 				</div>
 
@@ -127,7 +135,9 @@
 								<span>No. 0842</span>
 								<span>{today}</span>
 							</div>
-							<p class="mt-3 text-center font-mono text-xs tracking-[0.15em]">NOTA DE VENTA</p>
+							<p class="mt-3 text-center font-mono text-xs tracking-[0.15em]">
+								{t('landing.receiptTitle')}
+							</p>
 
 							<div class="my-4 border-t border-dashed border-base-content/20"></div>
 
@@ -146,12 +156,12 @@
 							<div class="my-4 border-t border-dashed border-base-content/20"></div>
 
 							<div class="flex items-baseline justify-between font-mono text-sm font-semibold">
-								<span>TOTAL</span>
-								<span>1 sistema</span>
+								<span>{t('landing.receiptTotal')}</span>
+								<span>{t('landing.receiptTotalValue')}</span>
 							</div>
 
 							<p class="mt-6 text-center font-mono text-[10px] text-base-content/35">
-								* gracias por su visita *
+								{t('landing.receiptThanks')}
 							</p>
 						</div>
 					</div>
@@ -165,11 +175,10 @@
 		<div class="mx-auto max-w-5xl px-6 lg:px-8">
 			<div class="max-w-2xl">
 				<h2 class="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-					Construido para cómo trabaja un restaurante, no al revés.
+					{t('landing.featuresTitle')}
 				</h2>
 				<p class="mt-5 text-base leading-7 text-base-content/60">
-					No necesitas una colección de herramientas que apenas se hablan entre sí. Contaco conecta
-					la operación diaria con la información financiera.
+					{t('landing.featuresSub')}
 				</p>
 			</div>
 
@@ -192,17 +201,16 @@
 	<section class="relative overflow-hidden border-b border-base-300 py-24 sm:py-28">
 		<div class="mx-auto max-w-3xl px-6 text-center lg:px-8">
 			<h2 class="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-				Tu tiempo debería estar en tu restaurante, no en una hoja de cálculo.
+				{t('landing.ctaTitle')}
 			</h2>
 			<p class="mx-auto mt-5 max-w-xl text-sm leading-6 text-base-content/60 sm:text-base">
-				Empieza con 14 días gratis y descubre cómo se siente tener la operación y los números en el
-				mismo lugar.
+				{t('landing.ctaSub')}
 			</p>
 			<a
 				href={resolve('/better-auth')}
 				class="btn mt-9 inline-flex rounded-md px-7 py-3.5 text-sm font-semibold btn-primary"
 			>
-				Entrar a la app
+				{t('landing.enterApp')}
 			</a>
 		</div>
 
@@ -213,7 +221,7 @@
 			<div
 				class="font-display flex h-28 w-28 -rotate-12 items-center justify-center rounded-full border-2 border-dashed border-error/40 text-center text-[10px] font-semibold tracking-widest text-error/60 uppercase"
 			>
-				al día<br />con el<br />SAT
+				{t('landing.satBadge')}
 			</div>
 		</div>
 	</section>
@@ -223,11 +231,10 @@
 		<div class="mx-auto max-w-5xl px-6 lg:px-8">
 			<div class="max-w-2xl">
 				<h2 class="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-					Un precio, todo incluido.
+					{t('landing.pricingTitle')}
 				</h2>
 				<p class="mt-4 text-sm leading-6 text-base-content/60 sm:text-base">
-					Los mismos módulos en los dos planes. La diferencia está en el compromiso y el
-					acompañamiento.
+					{t('landing.pricingSub')}
 				</p>
 			</div>
 
@@ -241,7 +248,7 @@
 						<div class="flex items-baseline justify-between">
 							<h3 class="font-display text-lg font-semibold">{plan.name}</h3>
 							{#if plan.isPopular}
-								<span class="text-xs font-semibold text-primary">recomendado</span>
+								<span class="text-xs font-semibold text-primary">{t('landing.recommended')}</span>
 							{/if}
 						</div>
 						<p class="mt-1 text-sm text-base-content/60">{plan.description}</p>
@@ -263,7 +270,7 @@
 								? 'bg-primary text-primary-content hover:opacity-90'
 								: 'border border-base-300 text-base-content hover:bg-base-200'}"
 						>
-							{plan.isPopular ? 'Elegir plan anual' : 'Elegir plan mensual'}
+							{plan.cta}
 						</a>
 					</div>
 				{/each}

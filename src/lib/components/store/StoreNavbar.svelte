@@ -6,8 +6,13 @@
 	} from '$lib/utils/storeCart.svelte.js';
 	import { resolve } from '$app/paths';
 	import { formatCents, precioFinalConIva } from '$lib/utils/money.js';
+	import LanguageToggle from '$lib/components/LanguageToggle.svelte';
+	import { t, i18n } from '$lib/i18n/locale.svelte.js';
 
 	let { restaurante, user = null } = $props();
+
+	// Se lee para re-renderizar al cambiar el idioma.
+	void i18n.locale;
 
 	const base = $derived(`/${restaurante.slug}`);
 	const items = $derived(itemsForStore(restaurante.slug));
@@ -33,7 +38,7 @@
 				tabindex="0"
 				role="button"
 				class="btn btn-ghost btn-sm lg:hidden"
-				aria-label="Abrir menú"
+				aria-label={t('store.openMenu')}
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -54,11 +59,12 @@
 				tabindex="-1"
 				class="menu dropdown-content z-50 mt-3 w-64 menu-sm rounded-2xl border border-base-200 bg-white p-3 shadow-xl ring-1 ring-slate-200/80"
 			>
-				<li><a href={resolve(base)}>Inicio</a></li>
-				<li><a href={resolve(`${base}/menu`)}>🍔 Menú</a></li>
+				<li><a href={resolve(base)}>{t('store.home')}</a></li>
+				<li><a href={resolve(`${base}/menu`)}>🍔 {t('store.menu')}</a></li>
 				{#if user}
-					<li><a href={resolve(`${base}/profile`)}>📦 Mis pedidos</a></li>
+					<li><a href={resolve(`${base}/profile`)}>{t('store.myOrdersFull')}</a></li>
 				{/if}
+				<li class="mt-2 flex items-center px-3 py-1 lg:hidden"><LanguageToggle compacto /></li>
 			</ul>
 		</div>
 
@@ -74,19 +80,25 @@
 	<!-- Navbar Center: navegación desktop -->
 	<div class="navbar-center hidden lg:flex">
 		<ul class="menu menu-horizontal gap-1 px-1 text-sm font-medium">
-			<li><a href={resolve(base)} class="rounded-xl">Inicio</a></li>
-			<li><a href={resolve(`${base}/menu`)} class="rounded-xl">Menú</a></li>
+			<li><a href={resolve(base)} class="rounded-xl">{t('store.home')}</a></li>
+			<li><a href={resolve(`${base}/menu`)} class="rounded-xl">{t('store.menu')}</a></li>
 			{#if user}
-				<li><a href={resolve(`${base}/profile`)} class="rounded-xl">Mis pedidos</a></li>
+				<li><a href={resolve(`${base}/profile`)} class="rounded-xl">{t('store.myOrders')}</a></li>
 			{/if}
 		</ul>
 	</div>
 
 	<!-- Navbar End: carrito + sesión -->
 	<div class="navbar-end gap-2">
+		<div class="hidden lg:block"><LanguageToggle /></div>
 		<!-- Carrito -->
 		<div class="dropdown dropdown-end">
-			<div tabindex="0" role="button" class="btn btn-circle btn-ghost" aria-label="Ver carrito">
+			<div
+				tabindex="0"
+				role="button"
+				class="btn btn-circle btn-ghost"
+				aria-label={t('store.viewCart')}
+			>
 				<div class="indicator">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -112,7 +124,7 @@
 				class="dropdown-content card z-50 mt-3 w-80 border border-base-200 bg-base-100 p-4 shadow-xl"
 			>
 				{#if items.length === 0}
-					<p class="py-2 text-center text-sm text-base-content/60">Tu carrito está vacío.</p>
+					<p class="py-2 text-center text-sm text-base-content/60">{t('store.emptyCart')}</p>
 				{:else}
 					<div class="max-h-72 space-y-3 overflow-y-auto">
 						{#each items as item (item.id)}
@@ -132,13 +144,13 @@
 								</div>
 								<div class="flex items-center gap-1">
 									<button
-										aria-label="Quitar uno"
+										aria-label={t('store.removeOne')}
 										class="btn btn-xs"
 										onclick={() => substractFromStoreCart(item.id)}>-</button
 									>
 									<span class="w-5 text-center text-sm">{item.quantity}</span>
 									<button
-										aria-label="Agregar uno"
+										aria-label={t('store.addOne')}
 										class="btn btn-xs"
 										onclick={() =>
 											addToStoreCart(restaurante.slug, {
@@ -153,12 +165,12 @@
 						{/each}
 					</div>
 					<div class="mt-3 flex items-center justify-between border-t border-base-200 pt-3">
-						<span class="text-sm font-semibold">Subtotal</span>
+						<span class="text-sm font-semibold">{t('store.subtotal')}</span>
 						<span class="font-black text-primary">{formatCents(total)}</span>
 					</div>
-					<p class="mt-1 text-[11px] text-base-content/50">IVA incluido</p>
+					<p class="mt-1 text-[11px] text-base-content/50">{t('store.ivaIncluido')}</p>
 					<a href={resolve(`${base}/checkout`)} class="btn mt-3 btn-block btn-primary">
-						Ir a pagar ({formatCents(total)})
+						{t('store.checkout')} ({formatCents(total)})
 					</a>
 				{/if}
 			</div>
@@ -178,9 +190,9 @@
 					tabindex="-1"
 					class="menu dropdown-content z-50 mt-3 w-52 menu-sm rounded-2xl border border-base-200 bg-white p-3 shadow-xl ring-1 ring-slate-200/80"
 				>
-					<li><a href={resolve(`${base}/profile`)}>📦 Mis pedidos</a></li>
+					<li><a href={resolve(`${base}/profile`)}>{t('store.myOrdersFull')}</a></li>
 					<li>
-						<button onclick={cerrarSesion}>Cerrar sesión</button>
+						<button onclick={cerrarSesion}>{t('store.logout')}</button>
 					</li>
 				</ul>
 			</div>
@@ -189,7 +201,7 @@
 				href={resolve(`/better-auth/login?callback=${encodeURIComponent(base)}`)}
 				class="btn rounded-xl px-4 btn-primary btn-sm"
 			>
-				Iniciar sesión
+				{t('store.login')}
 			</a>
 		{/if}
 	</div>

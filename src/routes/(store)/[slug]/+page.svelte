@@ -1,7 +1,11 @@
 <script>
 	import { resolve } from '$app/paths';
+	import { t, i18n } from '$lib/i18n/locale.svelte.js';
 
 	let { data } = $props();
+
+	// Se lee para re-renderizar al cambiar el idioma.
+	void i18n.locale;
 
 	const restaurante = $derived(data.restaurante);
 	const base = $derived(`/${restaurante.slug}`);
@@ -25,19 +29,19 @@
 	<div class="hero-content text-center text-neutral-content">
 		<div class="max-w-md">
 			{#if !restaurante.deliveryEnabled}
-				<span class="mb-3 badge badge-warning">Atención en el local</span>
+				<span class="mb-3 badge badge-warning">{t('store.inStore')}</span>
 			{/if}
 			<h1 class="mb-5 text-5xl font-bold drop-shadow">{restaurante.nombre}</h1>
 			{#if restaurante.descripcion}
 				<p class="mb-5 drop-shadow">{restaurante.descripcion}</p>
 			{/if}
 			<div class="flex flex-wrap justify-center gap-3">
-				<a href={resolve(`${base}/menu`)} class="btn btn-primary">Ver menú</a>
+				<a href={resolve(`${base}/menu`)} class="btn btn-primary">{t('store.viewMenu')}</a>
 				<a
 					href={resolve(`${base}/profile`)}
 					class="btn border-white bg-white/10 btn-outline text-white backdrop-blur"
 				>
-					Mis pedidos
+					{t('store.myOrders')}
 				</a>
 			</div>
 		</div>
@@ -48,20 +52,20 @@
 	<div class="grid gap-4 sm:grid-cols-3">
 		<div class="rounded-2xl border border-base-300 bg-base-100 p-5 text-center shadow-sm">
 			<p class="text-2xl">🍔</p>
-			<p class="mt-1 text-sm font-semibold">Menú en línea</p>
-			<p class="text-xs text-base-content/60">Precios con IVA incluido</p>
+			<p class="mt-1 text-sm font-semibold">{t('store.onlineMenu')}</p>
+			<p class="text-xs text-base-content/60">{t('store.pricesWithIva')}</p>
 		</div>
 		<div class="rounded-2xl border border-base-300 bg-base-100 p-5 text-center shadow-sm">
 			<p class="text-2xl">💳</p>
-			<p class="mt-1 text-sm font-semibold">Pago seguro</p>
-			<p class="text-xs text-base-content/60">Tarjeta vía Stripe</p>
+			<p class="mt-1 text-sm font-semibold">{t('store.securePayment')}</p>
+			<p class="text-xs text-base-content/60">{t('store.payWithStripe')}</p>
 		</div>
 		<div class="rounded-2xl border border-base-300 bg-base-100 p-5 text-center shadow-sm">
 			<p class="text-2xl">🛵</p>
 			<p class="mt-1 text-sm font-semibold">
-				{restaurante.deliveryEnabled ? 'A domicilio' : 'Solo en el local'}
+				{restaurante.deliveryEnabled ? t('store.delivery') : t('store.onlyInStore')}
 			</p>
-			<p class="text-xs text-base-content/60">{restaurante.direccion ?? 'En tu puerta'}</p>
+			<p class="text-xs text-base-content/60">{restaurante.direccion ?? t('store.atYourDoor')}</p>
 		</div>
 	</div>
 </section>

@@ -24,6 +24,10 @@ const rutasProtegidas = [
 		event.locals.user = session.user;
 	}
 
+	// Idioma de la interfaz: cookie `contaco_locale` (es por defecto).
+	const localeCookie = event.cookies.get('contaco_locale');
+	event.locals.locale = localeCookie === 'en' ? 'en' : 'es';
+
 	if (!event.locals.user && rutasProtegidas.some((ruta) => event.url.pathname.startsWith(ruta))) {
 		throw redirect(303, '/better-auth/login');
 	}

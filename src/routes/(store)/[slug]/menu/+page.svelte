@@ -2,8 +2,12 @@
 	import { SvelteMap } from 'svelte/reactivity';
 	import { addToStoreCart, itemsForStore } from '$lib/utils/storeCart.svelte.js';
 	import { formatCents, precioFinalConIva } from '$lib/utils/money.js';
+	import { t, i18n } from '$lib/i18n/locale.svelte.js';
 
 	let { data } = $props();
+
+	// Se lee para re-renderizar al cambiar el idioma.
+	void i18n.locale;
 
 	const enCarrito = $derived(itemsForStore(data.restaurante.slug));
 
@@ -27,22 +31,22 @@
 
 <div class="mx-auto max-w-6xl p-4 sm:p-6 lg:p-8">
 	<header class="mb-6">
-		<h1 class="text-3xl font-black tracking-tight">Menú</h1>
+		<h1 class="text-3xl font-black tracking-tight">{t('store.menuTitle')}</h1>
 		<p class="text-sm text-base-content/70">
-			{data.restaurante.nombre} · Precios con IVA incluido
+			{data.restaurante.nombre} · {t('store.pricesWithIva')}
 		</p>
 	</header>
 
 	{#if !data.restaurante.deliveryEnabled}
 		<div class="mb-6 alert text-sm alert-warning shadow-sm">
-			<span>Este restaurante no está aceptando pedidos a domicilio en este momento.</span>
+			<span>{t('store.noDelivery')}</span>
 		</div>
 	{/if}
 
 	{#if data.items.length === 0}
 		<div class="rounded-3xl border-2 border-dashed border-base-300 bg-base-200/50 p-12 text-center">
 			<p class="text-base text-base-content/70">
-				Este restaurante aún no tiene platillos en su menú.
+				{t('store.emptyMenu')}
 			</p>
 		</div>
 	{:else}
@@ -73,7 +77,7 @@
 										<p class="font-black text-primary">
 											{formatCents(precioFinalConIva(product.price))}
 										</p>
-										<p class="text-[11px] text-base-content/50">IVA incluido</p>
+										<p class="text-[11px] text-base-content/50">{t('store.ivaIncluido')}</p>
 									</div>
 									<button
 										class="btn btn-primary btn-sm"
@@ -81,9 +85,9 @@
 										onclick={() => addToStoreCart(data.restaurante.slug, product)}
 									>
 										{#if cantidadEnCarrito(product._id) > 0}
-											En carrito ({cantidadEnCarrito(product._id)})
+											{t('store.inCart')} ({cantidadEnCarrito(product._id)})
 										{:else}
-											Agregar
+											{t('store.add')}
 										{/if}
 									</button>
 								</div>
