@@ -38,7 +38,7 @@ export const en = {
 		receiptTotalValue: '1 system',
 		receiptThanks: '* thanks for your visit *',
 		ticket0: 'Point of sale',
-		ticket1: 'WhatsApp Orders',
+		ticket1: 'Online Orders',
 		ticket2: 'TAX Module',
 		ticket3: 'Finance Dashboard',
 		featuresTitle: 'Built for how a restaurant actually works, not the other way around.',

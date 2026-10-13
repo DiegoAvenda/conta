@@ -38,7 +38,7 @@ export const es = {
 		receiptTotalValue: '1 sistema',
 		receiptThanks: '* gracias por su visita *',
 		ticket0: 'Punto de venta',
-		ticket1: 'Pedidos WhatsApp',
+		ticket1: 'Pedidos en línea',
 		ticket2: 'Módulo SAT',
 		ticket3: 'Panel financiero',
 		featuresTitle: 'Construido para cómo trabaja un restaurante, no al revés.',

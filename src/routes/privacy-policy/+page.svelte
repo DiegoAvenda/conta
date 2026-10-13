@@ -2,7 +2,6 @@
 	<header class="mb-8 border-b border-slate-200 pb-6">
 		<p class="text-xs font-semibold tracking-[0.2em] text-primary uppercase">Legal</p>
 
-		```
 		<h1 class="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
 			Política de Privacidad
 		</h1>
@@ -21,9 +20,6 @@
 			<p class="mt-4">
 				Esta Política de Privacidad explica qué información podemos recopilar, para qué la
 				utilizamos, cómo la protegemos y qué opciones tienen los usuarios respecto de sus datos.
-				También describe el tratamiento de información realizado mediante integraciones de terceros,
-				incluyendo <strong>WhatsApp Business Platform proporcionada por Meta Platforms, Inc.</strong
-				>
 			</p>
 		</section>
 
@@ -54,12 +50,6 @@
 				</li>
 
 				<li>
-					<strong>Información de WhatsApp:</strong> cuando un restaurante conecta su cuenta de WhatsApp
-					Business con Contaco, podemos procesar información recibida mediante las APIs de Meta necesaria
-					para proporcionar las funcionalidades solicitadas por el restaurante.
-				</li>
-
-				<li>
 					<strong>Datos técnicos:</strong> dirección IP, tipo de navegador, dispositivo, registros técnicos
 					y otra información necesaria para mantener la seguridad, estabilidad y funcionamiento de la
 					Plataforma.
@@ -68,44 +58,7 @@
 		</section>
 
 		<section>
-			<h2 class="text-2xl font-semibold text-slate-900">
-				2. Información procesada mediante WhatsApp Business
-			</h2>
-
-			<p class="mt-3">
-				Los restaurantes pueden conectar sus cuentas de <strong>WhatsApp Business</strong> con
-				Contaco mediante las interfaces y APIs proporcionadas por
-				<strong>Meta Platforms, Inc.</strong>
-			</p>
-
-			<p class="mt-4">
-				Cuando esta integración está habilitada, Contaco puede recibir y procesar información
-				relacionada con las conversaciones y pedidos realizados mediante WhatsApp, incluyendo,
-				cuando corresponda:
-			</p>
-
-			<ul class="mt-3 list-disc space-y-2 pl-6">
-				<li>Número de teléfono asociado al remitente.</li>
-				<li>Contenido de mensajes enviados al negocio.</li>
-				<li>Información contenida en pedidos y solicitudes.</li>
-				<li>Fecha y hora de eventos o mensajes.</li>
-				<li>Identificadores técnicos necesarios para gestionar la integración.</li>
-			</ul>
-
-			<p class="mt-4">
-				Esta información se utiliza para proporcionar las funcionalidades solicitadas por el
-				restaurante, incluyendo la recepción, organización y gestión de pedidos y mensajes desde el
-				panel de Contaco.
-			</p>
-
-			<p class="mt-4">
-				Contaco no utiliza el contenido de los mensajes de WhatsApp para vender información personal
-				ni para crear perfiles publicitarios de los usuarios finales.
-			</p>
-		</section>
-
-		<section>
-			<h2 class="text-2xl font-semibold text-slate-900">3. Finalidades del tratamiento</h2>
+			<h2 class="text-2xl font-semibold text-slate-900">2. Finalidades del tratamiento</h2>
 
 			<p class="mt-3">Utilizamos la información recopilada para las siguientes finalidades:</p>
 
@@ -117,7 +70,7 @@
 
 				<li>
 					<strong>Gestionar integraciones:</strong> conectar y mantener las integraciones que el restaurante
-					solicite, incluyendo WhatsApp Business Platform.
+					solicite.
 				</li>
 
 				<li>
@@ -149,7 +102,7 @@
 
 		<section>
 			<h2 class="text-2xl font-semibold text-slate-900">
-				4. Integraciones y proveedores de servicios
+				3. Integraciones y proveedores de servicios
 			</h2>
 
 			<p class="mt-3">
@@ -164,16 +117,10 @@
 				necesario para proporcionar sus servicios y aplicamos medidas razonables para proteger los
 				datos procesados.
 			</p>
-
-			<p class="mt-4">
-				En particular, la integración con WhatsApp Business se realiza mediante servicios y APIs
-				proporcionados por <strong>Meta Platforms, Inc.</strong>. El uso de WhatsApp Business
-				también está sujeto a las condiciones y políticas aplicables de Meta.
-			</p>
 		</section>
 
 		<section>
-			<h2 class="text-2xl font-semibold text-slate-900">5. Compartición de información</h2>
+			<h2 class="text-2xl font-semibold text-slate-900">4. Compartición de información</h2>
 
 			<p class="mt-3">Contaco no vende ni alquila información personal a terceros.</p>
 
@@ -192,7 +139,7 @@
 
 		<section>
 			<h2 class="text-2xl font-semibold text-slate-900">
-				6. Conservación y eliminación de información
+				5. Conservación y eliminación de información
 			</h2>
 
 			<p class="mt-3">
@@ -207,16 +154,10 @@
 				que debamos conservar por obligaciones legales, seguridad, prevención de fraude o legítimas
 				necesidades operativas.
 			</p>
-
-			<p class="mt-4">
-				Cuando un restaurante desconecta su cuenta de WhatsApp Business de Contaco, dejaremos de
-				recibir nueva información mediante dicha integración, sin perjuicio de la información que
-				deba conservarse por las razones descritas anteriormente.
-			</p>
 		</section>
 
 		<section>
-			<h2 class="text-2xl font-semibold text-slate-900">7. Seguridad de la información</h2>
+			<h2 class="text-2xl font-semibold text-slate-900">6. Seguridad de la información</h2>
 
 			<p class="mt-3">
 				Implementamos medidas técnicas y administrativas razonables destinadas a proteger la
@@ -235,7 +176,7 @@
 		</section>
 
 		<section>
-			<h2 class="text-2xl font-semibold text-slate-900">8. Derechos de los usuarios</h2>
+			<h2 class="text-2xl font-semibold text-slate-900">7. Derechos de los usuarios</h2>
 
 			<p class="mt-3">
 				Los usuarios pueden solicitar información sobre los datos personales que Contaco mantiene
@@ -255,14 +196,14 @@
 
 		<section>
 			<h2 class="text-2xl font-semibold text-slate-900">
-				9. Privacidad de los clientes de los restaurantes
+				8. Privacidad de los clientes de los restaurantes
 			</h2>
 
 			<p class="mt-3">
 				Contaco proporciona herramientas para que los restaurantes gestionen pedidos y operaciones
-				de su negocio. Cuando un comensal interactúa directamente con un restaurante, por ejemplo
-				mediante WhatsApp, determinados datos pueden ser procesados por Contaco en nombre del
-				restaurante para proporcionar la funcionalidad solicitada.
+				de su negocio. Cuando un comensal interactúa directamente con un restaurante, determinados
+				datos pueden ser procesados por Contaco en nombre del restaurante para proporcionar la
+				funcionalidad solicitada.
 			</p>
 
 			<p class="mt-4">
@@ -274,7 +215,7 @@
 
 		<section>
 			<h2 class="text-2xl font-semibold text-slate-900">
-				10. Cambios a esta Política de Privacidad
+				9. Cambios a esta Política de Privacidad
 			</h2>
 
 			<p class="mt-3">
@@ -290,7 +231,7 @@
 		</section>
 
 		<section>
-			<h2 class="text-2xl font-semibold text-slate-900">11. Contacto</h2>
+			<h2 class="text-2xl font-semibold text-slate-900">10. Contacto</h2>
 
 			<p class="mt-3">
 				Para preguntas, solicitudes o asuntos relacionados con esta Política de Privacidad o con el
@@ -316,5 +257,4 @@
 			</ul>
 		</section>
 	</div>
-	```
 </div>

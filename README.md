@@ -1,6 +1,6 @@
 # Contaco
 
-> Todo tu restaurante en un solo ticket — POS, online ordering, expenses, and Mexican SAT (RESICO) tax reporting in one SaaS platform for small restaurants.
+> Your entire restaurant on a single ticket — POS, online ordering, expenses, and Mexican SAT (RESICO) tax reporting in one SaaS platform for small restaurants.
 
 ![SvelteKit](https://img.shields.io/badge/SvelteKit-2.x-FF3E00?logo=svelte&logoColor=white)
 ![Svelte](https://img.shields.io/badge/Svelte-5-FF3E00?logo=svelte&logoColor=white)
@@ -42,7 +42,7 @@ The UI is fully bilingual (Spanish / English) and every authenticated page ships
 ### Customer-facing storefront
 
 - Public menu at `/{slug}/menu`, cart, and Stripe Checkout with webhook fulfillment
-- Order tracking at `/{slug}/profile`, WhatsApp Cloud API ordering integration
+- Order tracking at `/{slug}/profile`
 
 ### Platform
 
@@ -52,20 +52,19 @@ The UI is fully bilingual (Spanish / English) and every authenticated page ships
 
 ## Tech stack
 
-| Layer           | Choice                              |
-| --------------- | ----------------------------------- |
-| Framework       | SvelteKit 2 + Svelte 5 (runes)      |
-| Styling         | Tailwind CSS 4 + DaisyUI 5          |
-| Language        | JavaScript (ES modules)             |
-| Database        | MongoDB (native driver)             |
-| Auth            | Better Auth                         |
-| Payments        | Stripe Checkout + webhooks          |
-| Storage         | Cloudflare R2 (S3-compatible)       |
-| Messaging       | WhatsApp Cloud API (Meta Graph API) |
-| i18n            | Custom ES/EN locale store           |
-| Testing         | `node:test` + `node:assert`         |
-| Deploy          | Vercel (`adapter-vercel`)           |
-| Package manager | pnpm                                |
+| Layer           | Choice                         |
+| --------------- | ------------------------------ |
+| Framework       | SvelteKit 2 + Svelte 5 (runes) |
+| Styling         | Tailwind CSS 4 + DaisyUI 5     |
+| Language        | JavaScript (ES modules)        |
+| Database        | MongoDB (native driver)        |
+| Auth            | Better Auth                    |
+| Payments        | Stripe Checkout + webhooks     |
+| Storage         | Cloudflare R2 (S3-compatible)  |
+| i18n            | Custom ES/EN locale store      |
+| Testing         | `node:test` + `node:assert`    |
+| Deploy          | Vercel (`adapter-vercel`)      |
+| Package manager | pnpm                           |
 
 ## Getting started
 
@@ -74,7 +73,7 @@ The UI is fully bilingual (Spanish / English) and every authenticated page ships
 - Node.js 22+
 - pnpm
 - A MongoDB instance (Atlas or local)
-- Optional for full functionality: Stripe, Google OAuth, Cloudflare R2, and WhatsApp API credentials
+- Optional for full functionality: Stripe, Google OAuth, and Cloudflare R2 credentials
 
 ### 1. Install
 
@@ -110,11 +109,6 @@ R2_ACCESS_KEY_ID=<access-key>
 R2_SECRET_ACCESS_KEY=<secret-key>
 R2_BUCKET_NAME=<bucket>
 R2_PUBLIC_URL=https://<public-bucket-url>
-
-# WhatsApp (Meta Cloud API, optional)
-WHATSAPP_ACCESS_TOKEN=<token>
-WHATSAPP_PHONE_NUMBER_ID=<phone-number-id>
-WHATSAPP_TEST_NUMBER=<e164-test-number>
 ```
 
 > Demo mode, the landing page, and the SAT guide work without any credentials. Auth, payments, and uploads require their respective variables.
@@ -150,8 +144,6 @@ src/
 │   ├── inscripcion/           # SAT registration guide
 │   ├── (store)/[slug]/        # Public storefront (menu, checkout, tracking)
 │   ├── api/stripe/            # Checkout + webhook fulfillment
-│   ├── api/whatsapp/          # Order webhook
-│   └── api/meta/              # WhatsApp test tooling
 ├── lib/
 │   ├── server/                # DB, auth, fiscal, sales, invoices, CFDI, R2
 │   ├── demo/                  # Sample data + tutorial steps (demo mode)
@@ -174,4 +166,4 @@ The app targets Vercel via `@sveltejs/adapter-vercel`. Set the same environment 
 
 - Fiscal figures are **estimates** for operational guidance — every SAT-related view states that amounts must be validated against the official SAT portal.
 - Refunds deduct the pre-IVA base (not the charged total) so revenue is never understated; cancellations are ledger-tracked separately.
-- Menu titles/descriptions are length-capped to stay compatible with WhatsApp list-message limits.
+- Menu titles/descriptions are length-capped to keep the storefront cards consistent.
